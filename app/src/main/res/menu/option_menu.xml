@@ -3,18 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_username"
+        android:id="@+id/option_username"
         android:icon="@drawable/ic_map_black_24dp"
         android:title="@string/title_placeholder"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/navigation_edit_profile"
+        android:id="@+id/option_edit_profile"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="@string/title_edit_profile" />
 
     <item
-        android:id="@+id/navigation_logout"
+        android:id="@+id/option_logout"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_logout" />
 </menu>
