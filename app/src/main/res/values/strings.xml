@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">ParkPal</string>
-    <string name="title_home">Home</string>
     <string name="title_search">Search</string>
     <string name="title_map">Map</string>
     <string name="title_recommendations">Recommendations</string>
+    <string name="title_logout">Log out</string>
+    <string name="title_edit_profile">Edit Profile</string>
     <string name="title_activity_login">Sign in/Sign up</string>
+    <string name="title_placeholder">Placeholder</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

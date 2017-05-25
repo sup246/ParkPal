@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -17,17 +19,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+                case R.id.navigation_username:
+                    mTextMessage.setText(R.string.title_placeholder);
                     return true;
-                case R.id.navigation_map:
-                    mTextMessage.setText(R.string.title_map);
+                case R.id.navigation_edit_profile:
+                    mTextMessage.setText(R.string.title_edit_profile);
                     return true;
-                case R.id.navigation_search:
-                    mTextMessage.setText(R.string.title_search);
-                    return true;
-                case R.id.navigation_recommendations:
-                    mTextMessage.setText(R.string.title_recommendations);
+                case R.id.navigation_logout:
+                    mTextMessage.setText(R.string.title_logout);
                     return true;
             }
             return false;
@@ -45,4 +44,10 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.option_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 }
