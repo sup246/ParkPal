@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "330564927260",
+    "project_id": "parkpal-168714"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330564927260:android:8186c0f203e613b2",
+        "android_client_info": {
+          "package_name": "com.psu.sweng500.team4.parkpal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330564927260-nsthhv0eb9uqb423hak1sg0tl0vikees.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.psu.sweng500.team4.parkpal",
+            "certificate_hash": "9181e5ed7baf3798632ef3430c53aa6bf9b7d918"
+          }
+        },
+        {
+          "client_id": "330564927260-d3fi9shi8qgh3emeql4md9rfhdrh2cbo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQyDrhMLk17VXS8GLuROXaN200Ccq-vfQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
