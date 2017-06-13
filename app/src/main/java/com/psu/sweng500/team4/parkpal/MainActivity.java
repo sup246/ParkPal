@@ -67,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
 
         try {
+            //Initialization of the AzureServiceAdapter to make it usable in the app.
             AzureServiceAdapter.Initialize(this);
             Log.d("INFO", "AzureServiceAdapter initialized");
-            pullLocationExample();
         } catch (Exception e) {
             Log.e("ParkPal", "exception", e);
         }
