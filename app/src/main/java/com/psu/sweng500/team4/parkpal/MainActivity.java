@@ -2,16 +2,25 @@ package com.psu.sweng500.team4.parkpal;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
+import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.psu.sweng500.team4.parkpal.Models.Location;
+import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,27 +29,27 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    // Handle navigation view item clicks here.
-                    int id = item.getItemId();
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            // Handle navigation view item clicks here.
+            int id = item.getItemId();
 
-                    Fragment fragment = null;
+            Fragment fragment = null;
 
-                    if (id == R.id.navigation_map) {
-                        fragment = new GMapFragment();
-                    } else if (id == R.id.navigation_search) {
-                        fragment = new SearchFragment();
-                    } else if (id == R.id.navigation_recommendations) {
-                        fragment = new RecommendationsFragment();
-                    }
+            if (id == R.id.navigation_map) {
+                fragment = new GMapFragment();
+            } else if (id == R.id.navigation_search) {
+                fragment = new SearchFragment();
+            } else if (id == R.id.navigation_recommendations) {
+                fragment = new RecommendationsFragment();
+            }
 
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content, fragment);
-                    transaction.commit();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, fragment);
+            transaction.commit();
 
-                    return true;
-                }
+            return true;
+        }
 
     };
 
@@ -56,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, new GMapFragment());
         transaction.commit();
+
+        try {
+            AzureServiceAdapter.Initialize(this);
+            Log.d("INFO", "AzureServiceAdapter initialized");
+            pullLocationExample();
+        } catch (Exception e) {
+            Log.e("ParkPal", "exception", e);
+        }
     }
 
     @Override
@@ -88,5 +105,40 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void pullLocationExample() {
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                //Get a MobileServiceTable of the LOCATIONS table from the AzureServiceAdapter
+                final MobileServiceTable<Location> table =
+                        AzureServiceAdapter.getInstance().getClient().getTable("LOCATIONS", Location.class);
+
+                try {
+                    //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
+                    //iterable like a regular list
+                    final MobileServiceList<Location> results = table.where().execute().get();
+
+                    for (int i = 0; i < 10; i++) {
+                        Log.d("INFO", "Result : " + results.get(i).getName() +
+                                " | " + results.get(i).getLatitude() +
+                                " , " + results.get(i).getLongitude());
+                    }
+
+                    //Alternatively, process the results on the UI thread if needed
+                   /* runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                           //do stuff with location results
+                        }
+                    });*/
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
     }
 }
