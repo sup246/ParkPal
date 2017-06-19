@@ -152,8 +152,10 @@ public class MainActivity extends AppCompatActivity {
         }.execute();
     }
 
-    private void clearLoginState(){
+    private void clearLoginState() {
         SharedPreferences sharedpreferences = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
-        sharedpreferences.edit().clear();
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.clear();
+        editor.commit();
     }
 }

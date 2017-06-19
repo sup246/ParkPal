@@ -3,7 +3,9 @@ package com.psu.sweng500.team4.parkpal;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -77,6 +79,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(isLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+
+            finish();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
@@ -334,6 +343,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
+            saveLoginState();
 
             // TODO Check if user has profile in ParkPal
 
@@ -428,6 +438,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success == SIGNED_IN) {
+                saveLoginState();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
 
@@ -445,6 +456,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private boolean isLoggedIn() {
+        SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
+        boolean loggedIn = false;
+        loggedIn = settings.getBoolean("hasLoggedIn", false);
+
+        return loggedIn;
+    }
+
+    private void saveLoginState() {
+        SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("hasLoggedIn", true);
+
+        // TODO Save google or email details
+
+        editor.commit();
     }
 }
 
