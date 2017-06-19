@@ -1,7 +1,9 @@
 package com.psu.sweng500.team4.parkpal;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,11 +23,14 @@ import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String SELECTED_ITEM = "opened_fragment";
     private BottomNavigationView mBottomNavigationView;
+    ArrayList<Location> mLocations;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (id == R.id.navigation_map) {
                 fragment = new GMapFragment();
+                if (!mLocations.isEmpty()) {
+                    ((GMapFragment)fragment).setLocations(mLocations);
+                }
             } else if (id == R.id.navigation_search) {
                 fragment = new SearchFragment();
             } else if (id == R.id.navigation_recommendations) {
@@ -63,13 +71,17 @@ public class MainActivity extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, new GMapFragment());
+        Fragment fragment = new GMapFragment();
+        transaction.replace(R.id.content, fragment);
         transaction.commit();
 
         try {
             //Initialization of the AzureServiceAdapter to make it usable in the app.
             AzureServiceAdapter.Initialize(this);
             Log.d("INFO", "AzureServiceAdapter initialized");
+
+            mLocations = new ArrayList<Location>();
+            pullLocationExample((GMapFragment) fragment);
         } catch (Exception e) {
             Log.e("ParkPal", "exception", e);
         }
@@ -96,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO
                 return true;
             case R.id.option_logout:
-                // TODO Actually logout the user
+                clearLoginState();
 
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
@@ -107,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void pullLocationExample() {
+    private void pullLocationExample(final GMapFragment fragment) {
 
         new AsyncTask<Void, Void, Void>() {
             @Override
@@ -121,24 +133,30 @@ public class MainActivity extends AppCompatActivity {
                     //iterable like a regular list
                     final MobileServiceList<Location> results = table.where().execute().get();
 
+                    mLocations.addAll(results);
+
                     for (int i = 0; i < 10; i++) {
                         Log.d("INFO", "Result : " + results.get(i).getName() +
                                 " | " + results.get(i).getLatitude() +
                                 " , " + results.get(i).getLongitude());
                     }
 
-                    //Alternatively, process the results on the UI thread if needed
-                   /* runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                           //do stuff with location results
+                            fragment.setLocations(mLocations);
                         }
-                    });*/
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
             }
         }.execute();
+    }
+
+    private void clearLoginState(){
+        SharedPreferences sharedpreferences = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
+        sharedpreferences.edit().clear();
     }
 }
