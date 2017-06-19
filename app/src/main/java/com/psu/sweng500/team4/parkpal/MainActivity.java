@@ -1,11 +1,9 @@
 package com.psu.sweng500.team4.parkpal;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -42,10 +39,7 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
 
             if (id == R.id.navigation_map) {
-                fragment = new GMapFragment();
-                if (!mLocations.isEmpty()) {
-                    ((GMapFragment)fragment).setLocations(mLocations);
-                }
+                fragment = GMapFragment.newInstance(mLocations);
             } else if (id == R.id.navigation_search) {
                 fragment = new SearchFragment();
             } else if (id == R.id.navigation_recommendations) {
@@ -144,7 +138,10 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // If we're just starting up we are waiting on getting locations so
+                            // set locations and after create the markers
                             fragment.setLocations(mLocations);
+                            fragment.createLocationMarkers();
                         }
                     });
                 } catch (Exception e) {

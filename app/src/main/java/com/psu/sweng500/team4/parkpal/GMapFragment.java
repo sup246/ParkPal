@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
@@ -29,6 +30,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
 
     public GMapFragment() {}
+
+    public static GMapFragment newInstance(ArrayList<Location> locations) {
+        GMapFragment fragment = new GMapFragment();
+
+        fragment.setLocations(locations);
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,9 +54,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
+    public void onResume() { super.onResume(); }
 
     @Override
     public void onDestroy() {
@@ -86,21 +93,17 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
         });
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mHomeLocation, 7));
+
+        // If we're coming back to the map fragment and are reiniting mMap first, make sure we
+        // create markers after
+        if (mLocations != null) {
+            createLocationMarkers();
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    public void setLocations(ArrayList<Location> locations) {
-        mLocations = locations;
-
-        for (Location l: mLocations) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
-                    l.getLongitude())).title(l.getName())
-                            .snippet(l.getPhone()));
-        }
     }
 
     public void test() {}
@@ -121,5 +124,17 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
         tv.setText(marker.getSnippet());
 
         return(popup);
+    }
+
+    public void setLocations(ArrayList<Location> locations) {
+        mLocations = locations;
+    }
+
+    public void createLocationMarkers() {
+        for (Location l: mLocations) {
+            mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
+                    l.getLongitude())).title(l.getName())
+                    .snippet(l.getPhone()));
+        }
     }
 }
