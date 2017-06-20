@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String SELECTED_ITEM = "opened_fragment";
     private BottomNavigationView mBottomNavigationView;
-    ArrayList<Location> mLocations;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -39,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
 
             if (id == R.id.navigation_map) {
-                fragment = GMapFragment.newInstance(mLocations);
+                fragment = GMapFragment.newInstance();
             } else if (id == R.id.navigation_search) {
                 fragment = new SearchFragment();
             } else if (id == R.id.navigation_recommendations) {
@@ -65,20 +64,9 @@ public class MainActivity extends AppCompatActivity {
 
         //Manually displaying the first fragment - one time only
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = new GMapFragment();
+        Fragment fragment = GMapFragment.newInstance();
         transaction.replace(R.id.content, fragment);
         transaction.commit();
-
-        try {
-            //Initialization of the AzureServiceAdapter to make it usable in the app.
-            AzureServiceAdapter.Initialize(this);
-            Log.d("INFO", "AzureServiceAdapter initialized");
-
-            mLocations = new ArrayList<Location>();
-            pullLocationExample((GMapFragment) fragment);
-        } catch (Exception e) {
-            Log.e("ParkPal", "exception", e);
-        }
     }
 
     @Override
@@ -111,45 +99,6 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void pullLocationExample(final GMapFragment fragment) {
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                //Get a MobileServiceTable of the LOCATIONS table from the AzureServiceAdapter
-                final MobileServiceTable<Location> table =
-                        AzureServiceAdapter.getInstance().getClient().getTable("LOCATIONS", Location.class);
-
-                try {
-                    //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
-                    //iterable like a regular list
-                    final MobileServiceList<Location> results = table.where().execute().get();
-
-                    mLocations.addAll(results);
-
-                    for (int i = 0; i < 10; i++) {
-                        Log.d("INFO", "Result : " + results.get(i).getName() +
-                                " | " + results.get(i).getLatitude() +
-                                " , " + results.get(i).getLongitude());
-                    }
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // If we're just starting up we are waiting on getting locations so
-                            // set locations and after create the markers
-                            fragment.setLocations(mLocations);
-                            fragment.createLocationMarkers();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();
     }
 
     private void clearLoginState() {

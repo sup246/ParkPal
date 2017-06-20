@@ -1,6 +1,7 @@
 package com.psu.sweng500.team4.parkpal;
 
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -17,7 +18,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
+import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
+import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -31,10 +35,8 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
 
     public GMapFragment() {}
 
-    public static GMapFragment newInstance(ArrayList<Location> locations) {
+    public static GMapFragment newInstance() {
         GMapFragment fragment = new GMapFragment();
-
-        fragment.setLocations(locations);
 
         return fragment;
     }
@@ -94,10 +96,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mHomeLocation, 7));
 
-        // If we're coming back to the map fragment and are reiniting mMap first, make sure we
-        // create markers after
-        if (mLocations != null) {
-            createLocationMarkers();
+        if (mLocations == null) {
+            mLocations = new ArrayList<Location>();
+
+            pullLocationExample();
         }
     }
 
@@ -126,15 +128,59 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
         return(popup);
     }
 
-    public void setLocations(ArrayList<Location> locations) {
-        mLocations = locations;
-    }
-
     public void createLocationMarkers() {
         for (Location l: mLocations) {
             mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
                     l.getLongitude())).title(l.getName())
                     .snippet(l.getPhone()));
         }
+    }
+
+    private void pullLocationExample() {
+
+        try {
+            //Initialization of the AzureServiceAdapter to make it usable in the app.
+            AzureServiceAdapter.Initialize(this.getContext());
+            Log.d("INFO", "AzureServiceAdapter initialized");
+
+        } catch (Exception e) {
+            Log.e("ParkPal", "exception", e);
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    //Get a MobileServiceTable of the LOCATIONS table from the AzureServiceAdapter
+                    final MobileServiceTable<Location> table =
+                        AzureServiceAdapter.getInstance().getClient().getTable("LOCATIONS", Location.class);
+
+
+                    //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
+                    //iterable like a regular list
+                    final MobileServiceList<Location> results = table.where().execute().get();
+
+                    mLocations.addAll(results);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // If we're just starting up we are waiting on getting locations so
+                            // set locations and after create the markers
+                            createLocationMarkers();
+                        }
+                    });
+
+                    for (int i = 0; i < 10; i++) {
+                        Log.d("INFO", "Result : " + results.get(i).getName() +
+                                " | " + results.get(i).getLatitude() +
+                                " , " + results.get(i).getLongitude());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
     }
 }
