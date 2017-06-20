@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -117,22 +118,30 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public View getInfoContents(Marker marker) {
-        View popup=mInflater.inflate(R.layout.map_popup, null);
+        View v = getLayoutInflater(Bundle.EMPTY).inflate(R.layout.marker_info_layout, null );
+        TextView tvLocation = (TextView) v.findViewById(R.id.tvLocation);
+        TextView tvLat = (TextView) v.findViewById(R.id.tvLat);
+        TextView tvLng = (TextView) v.findViewById(R.id.tvLng);
+        TextView tvSnippet = (TextView) v.findViewById(R.id.tvSnippet);
 
-        TextView tv=(TextView)popup.findViewById(R.id.title);
+        //get marker current location
+        LatLng latLng = marker.getPosition();
+        //sets the variables created above to the current information
+        tvLocation.setText(marker.getTitle());
+        tvLat.setText("Latitude: " + latLng.latitude);
+        tvLng.setText("Longitude: " + latLng.longitude);
+        tvSnippet.setText(marker.getSnippet());
 
-        tv.setText(marker.getTitle());
-        tv=(TextView)popup.findViewById(R.id.snippet);
-        tv.setText(marker.getSnippet());
-
-        return(popup);
+        return v;
     }
 
     public void createLocationMarkers() {
         for (Location l: mLocations) {
             mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
                     l.getLongitude())).title(l.getName())
-                    .snippet(l.getPhone()));
+                    .snippet(l.getPhone())
+                    .snippet(l.getAmenities())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.campsite_markergrsm)));
         }
     }
 
