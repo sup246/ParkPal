@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +40,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
+import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,9 +64,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+ //   private static final String[] DUMMY_CREDENTIALS = new String[]{
+ //           "foo@example.com:hello", "bar@example.com:world"
+ //   };
 
     private static final int RC_SIGN_IN = 9001;
 
@@ -103,6 +108,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
         });
+
+        try {
+            //Initialization of the AzureServiceAdapter to make it usable in the app.
+            AzureServiceAdapter.Initialize(this);
+            Log.d("INFO", "AzureServiceAdapter initialized");
+        } catch (Exception e) {
+            Log.e("ParkPal", "exception", e);
+        }
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -398,7 +411,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mPassword;
 
         private static final int SIGNED_IN = 9001;
-        private static final int NEW_USER = 9002;
+        private static final int NEW_USER = 9003;
         private static final int INCORRECT_PASS = 9002;
 
         UserLoginTask(String email, String password) {
@@ -416,20 +429,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (InterruptedException e) {
                 return -1;
             }
+            /**
+             *  THIS IS NEW
+             */
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    if (pieces[1].equals(mPassword)) {
-                        return SIGNED_IN;
-                    } else {
+            final MobileServiceTable<User> table =
+                    AzureServiceAdapter.getInstance().getClient().getTable("USERS", User.class);
+
+           try {
+               final MobileServiceList<User> results = table.where().field("email").eq(mEmail)
+               .and(table.where().field("password").eq(mPassword)).execute().get();
+                if(results.size()!=0){
+                    return SIGNED_IN;
+                }
+                else{
+                    final MobileServiceTable<User> sub_table =
+                            AzureServiceAdapter.getInstance().getClient().getTable("USERS", User.class);
+                    final MobileServiceList<User> sub_results =
+                            sub_table.where().field("email").eq(mEmail).execute().get();
+                    if(sub_results.size()!=0){
                         return INCORRECT_PASS;
                     }
+                    else return NEW_USER;
                 }
+           } catch (Exception e) {
+                e.printStackTrace();
             }
-
             return NEW_USER;
+            /**
+             *  THIS IS NEW
+             */
         }
 
         @Override
@@ -447,7 +476,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             } else {
-                // TODO Register the user
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         }
 

@@ -1,7 +1,7 @@
 package com.psu.sweng500.team4.parkpal.Models;
 
 /**
- * Created by brhoads on 6/14/2017.
+ * Created by phuizar on 6/14/2017.
  */
 
 public class User {
@@ -25,12 +25,25 @@ public class User {
     public String getId() { return id; }
     public final void setId(String id) { this.id = id; }
 
+    public User () {}
+
+     public User(String mUsername, String mEmail, String mBirthdate, String mFirstname,
+                     String mLastname, String mPassword, String mZipCode){
+        this.setUsername(mUsername);
+        this.setEmail(mEmail);
+        this.setBirthdate(mBirthdate);
+        this.setFirstName(mFirstname);
+        this.setLastName(mLastname);
+        this.setPassword(mPassword);
+        this.setZipCode(mZipCode);
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(String userName) {
+        this.username = userName;
     }
 
     public String getEmail() {
@@ -49,20 +62,20 @@ public class User {
         this.birthdate = birthdate;
     }
 
-    public String getFirstname() {
+    public String getFirstName() {
         return firstname;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstname = firstName;
     }
 
-    public String getLastname() {
+    public String getLastName() {
         return lastname;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastname = lastName;
     }
 
     public String getPassword() {
