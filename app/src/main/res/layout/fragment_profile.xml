@@ -1,0 +1,120 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.psu.sweng500.team4.parkpal.ProfileFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <!-- Registration progress -->
+
+    <ProgressBar
+        android:id="@+id/profile_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"/>
+
+    <ScrollView
+        android:id="@+id/profile_form"
+        android:layout_width="match_parent"
+        android:layout_height="468dp">
+
+        <LinearLayout
+            android:id="@+id/profile_sub_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="User Name"
+                tools:enabled="true"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="229dp" />
+
+            <EditText
+                android:id="@+id/firstName"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="First Name"
+                android:inputType="textPersonName"
+                android:text=""
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+            <EditText
+                android:id="@+id/lastName"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Last Name"
+                android:inputType="textPersonName"
+                android:text=""
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="59dp" />
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:text=""
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="102dp" />
+
+
+            <EditText
+                android:id="@+id/birthdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Date of Birth"
+                android:inputType="date"
+                android:text=""
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="143dp" />
+
+            <EditText
+                android:id="@+id/zipCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Zip Code"
+                android:inputType="number"
+                android:text=""
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="186dp" />
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                tools:layout_editor_absoluteX="148dp"
+                tools:layout_editor_absoluteY="447dp" />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

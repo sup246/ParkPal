@@ -87,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.option_edit_profile:
-                // TODO
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, new ProfileFragment());
+                transaction.commit();
                 return true;
             case R.id.option_logout:
                 clearLoginState();
