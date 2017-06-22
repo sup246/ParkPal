@@ -23,6 +23,25 @@
     </string>
     <string name="title_activity_maps">Map</string>
 
+    <!-- Strings related to registration -->
+    <string name="prompt_firstname">First Name</string>
+    <string name="prompt_lastname">Last Name</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_zip">Zip Code</string>
+    <string name="prompt_dob">Birthday</string>
+
+    <!-- Strings related to preferences -->
+    <string name="prefs_kids">Kid Friendly</string>
+    <string name="prefs_dogs">Dog Friendly</string>
+    <string name="prefs_watersports">Watersports</string>
+    <string name="prefs_extreme">Extreme Sports</string>
+    <string name="prefs_hiking">Hiking</string>
+    <string name="prefs_camping">Camping</string>
+    <string name="prefs_forest">Forest</string>
+    <string name="prefs_desert">Desert</string>
+    <string name="prefs_mountain">Mountain</string>
+    <string name="prefs_beach">Beach</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

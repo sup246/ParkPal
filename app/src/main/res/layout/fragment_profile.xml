@@ -21,33 +21,45 @@
     <ScrollView
         android:id="@+id/profile_form"
         android:layout_width="match_parent"
-        android:layout_height="468dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/profile_sub_form"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/username_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_username" />
 
             <EditText
                 android:id="@+id/userName"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="false"
                 android:cursorVisible="false"
+                android:ems="10"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
-                android:ems="10"
+                android:hint="User Name"
                 android:inputType="textPersonName"
-                android:text="User Name"
                 tools:enabled="true"
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="229dp" />
 
+            <TextView
+                android:id="@+id/firstname_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_firstname" />
+
             <EditText
                 android:id="@+id/firstName"
                 style="@style/Widget.AppCompat.EditText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="First Name"
@@ -56,10 +68,16 @@
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="16dp" />
 
+            <TextView
+                android:id="@+id/lastname_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_lastname" />
+
             <EditText
                 android:id="@+id/lastName"
                 style="@style/Widget.AppCompat.EditText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Last Name"
@@ -68,9 +86,15 @@
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="59dp" />
 
+            <TextView
+                android:id="@+id/email_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_email" />
+
             <EditText
                 android:id="@+id/email"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Email"
@@ -80,9 +104,15 @@
                 tools:layout_editor_absoluteY="102dp" />
 
 
+            <TextView
+                android:id="@+id/dob_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_dob" />
+
             <EditText
                 android:id="@+id/birthdate"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Date of Birth"
@@ -91,9 +121,15 @@
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="143dp" />
 
+            <TextView
+                android:id="@+id/zip_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prompt_zip" />
+
             <EditText
                 android:id="@+id/zipCode"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Zip Code"
@@ -102,9 +138,112 @@
                 tools:layout_editor_absoluteX="16dp"
                 tools:layout_editor_absoluteY="186dp" />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <Switch
+                android:id="@+id/prefs_kids"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_kids"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_dogs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_dogs"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_watersports"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_watersports"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_hiking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_hiking"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_camping"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_camping"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_forest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_forest"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_mountain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_mountain"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_desert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_desert"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
+            <Switch
+                android:id="@+id/prefs_beach"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/prefs_beach"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
             <Button
                 android:id="@+id/save"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Save"
                 tools:layout_editor_absoluteX="148dp"
