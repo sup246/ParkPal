@@ -3,6 +3,7 @@ package com.psu.sweng500.team4.parkpal;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -58,12 +59,14 @@ public class ProfileFragment extends Fragment {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* progressContainer.setVisibility(View.VISIBLE);*/
+                progressContainer.setVisibility(View.VISIBLE);
+                saveChanges();
+                progressContainer.setVisibility(View.INVISIBLE);
+
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.content, new GMapFragment());
                 transaction.commit();
 
-               // saveChanges();
             }
         });
 
@@ -73,30 +76,38 @@ public class ProfileFragment extends Fragment {
         return v;
     }
 
+    private MobileServiceTable<User> mobileServiceUserTable(){
+        return  AzureServiceAdapter.getInstance().getClient().getTable("USERS", User.class);
+    }
+
+    private void updateUserProfile(final User user) throws ExecutionException, InterruptedException {
+        mobileServiceUserTable().update(user).get();
+    }
+
     private void saveChanges(){
+
+        ProfileUser.setFirstName(mFirstNameView.getText().toString());
+        ProfileUser.setLastName(mLastNameView.getText().toString());
+        ProfileUser.setEmail(mEmailView.getText().toString());
+        ProfileUser.setBirthdate(mBirthDateView.getText().toString());
+        ProfileUser.setZipCode(mZipCodeView.getText().toString());
+
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
 
-               /* final MobileServiceTable<User> table =
-                        AzureServiceAdapter.getInstance().getClient().getTable("USERS", User.class);*/
                 try {
+                    updateUserProfile(ProfileUser);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
+                try {
                     getActivity().runOnUiThread(new Runnable() {
-
                         @Override
                         public void run() {
-                            progressContainer.setVisibility(View.INVISIBLE);
-
-                         /*   ProfileUser.setFirstName(mFirstNameView.getText().toString());
-
-                            try {
-                                table.update(ProfileUser).get();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                e.printStackTrace();
-                            }*/
                         }
                     });
                 } catch (Exception e) {
@@ -112,8 +123,7 @@ public class ProfileFragment extends Fragment {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                final MobileServiceTable<User> table =
-                        AzureServiceAdapter.getInstance().getClient().getTable("USERS", User.class);
+                final MobileServiceTable<User> table = mobileServiceUserTable();
                 try {
                     final MobileServiceList<User> results = table
                             .where()
