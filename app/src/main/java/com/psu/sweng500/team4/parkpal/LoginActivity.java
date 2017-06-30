@@ -90,7 +90,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             finish();
         }
-
+        Intent i = new Intent(this, RegistrationService.class);
+        startService(i);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.

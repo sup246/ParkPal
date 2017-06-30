@@ -57,5 +57,34 @@
             android:value="@integer/google_play_services_version" />
 
     </application>
-
+    <permission
+        android:name="com.github.hathibelagal.pn.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission
+        android:name="com.github.hithibelagal.pn.permission.C2D_MESSAGE" />
+    <receiver
+        android:name="com.google.android.gms.gcm.GcmReceiver"
+        android:export="true"
+        android:permission="com.google.android.c2dm.permission.SEND" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            <category android:name="com.github.hathibelagal.pn" />
+        </intent-filter>
+    </receiver>
+    <service android:name=".RegistrationService"
+        android:exported="false" />
+    <service
+        android:name=".TokenRefreshListenerService"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.google.android.gms.iid.InstanceID" />
+        </intent-filter>
+    </service>
+    <service
+        android:name=".NotificationsListenerService"
+        android:exported="false" >
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent-filter>
+    </service>
 </manifest>
