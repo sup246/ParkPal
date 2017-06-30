@@ -44,39 +44,5 @@
       }
     }
   ],
-  "client": [
-
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:365575135122:android:cf1a2ced9ab775f1",
-        "android_client_info": {
-          "package_name": "com.github.hathibelagal.pn"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "365575135122-s912cso9c4lbm48m8rrmtbq4ac6qv0nl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDmIwkulKqr-n6fkI3ppZKrdbE_XzeJ0pg"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 1
-        }
-      }
-    }
-  ],
   "configuration_version": "1"
 }
