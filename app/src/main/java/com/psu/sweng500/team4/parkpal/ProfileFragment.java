@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TabHost;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
@@ -51,6 +52,14 @@ public class ProfileFragment extends Fragment {
 
         Log.d("INFO", "email : " + uEmail);
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
+
+    /*    TabHost tabHost = (TabHost)v.findViewById(R.id.tabHost);
+
+        TabHost.TabSpec profileTab = tabHost.newTabSpec("Profile");
+        profileTab.setIndicator("Profile");
+        profileTab.setContent()
+
+        TabHost.TabSpec accountTab = tabHost.newTabSpec("Account");*/
 
         progressContainer = v.findViewById(R.id.profile_progress);
         mEmailView = (EditText) v.findViewById(R.id.email);

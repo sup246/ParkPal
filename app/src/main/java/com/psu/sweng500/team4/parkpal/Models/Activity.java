@@ -2,7 +2,7 @@ package com.psu.sweng500.team4.parkpal.Models;
 
 /**
  * Created by brhoads on 7/1/2017.
- * 
+ *
  * Usage:
  *      final MobileServiceTable<Activity> table =
         AzureServiceAdapter.getInstance().getClient().getTable("ACTIVITIES", Activity.class);
