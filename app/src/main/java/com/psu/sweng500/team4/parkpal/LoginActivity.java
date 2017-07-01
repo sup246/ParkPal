@@ -501,6 +501,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("hasLoggedIn", true);
+        editor.putString("loggedInEmail", mEmailView.getText().toString());
 
         // TODO Save google or email details
 

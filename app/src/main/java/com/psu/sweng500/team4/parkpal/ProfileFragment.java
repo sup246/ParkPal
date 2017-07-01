@@ -1,6 +1,8 @@
 package com.psu.sweng500.team4.parkpal;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -34,17 +36,20 @@ public class ProfileFragment extends Fragment {
     private View progressContainer;
     Button mSaveButton;
 
+    private String uEmail;
     private User ProfileUser;
 
     public ProfileFragment() {
-        // Required empty public constructor
-    }
 
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        uEmail = this.getArguments().getString("email");
+
+        Log.d("INFO", "email : " + uEmail);
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         progressContainer = v.findViewById(R.id.profile_progress);
@@ -128,7 +133,7 @@ public class ProfileFragment extends Fragment {
                     final MobileServiceList<User> results = table
                             .where()
                             .field("email")
-                            .eq("foo@example.com")
+                            .eq(uEmail)
                             .execute()
                             .get();
 

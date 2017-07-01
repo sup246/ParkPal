@@ -87,9 +87,19 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.option_edit_profile:
+                //Retrieve the logged in user's email and pass it to the ProfileFragment
+                String email = getLoggedInUserEmail();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("email", email);
+
+                ProfileFragment fragment = new ProfileFragment();
+                fragment.setArguments(bundle);
+
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content, new ProfileFragment());
+                transaction.replace(R.id.content, fragment);
                 transaction.commit();
+
                 return true;
             case R.id.option_logout:
                 clearLoginState();
@@ -101,6 +111,14 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private String getLoggedInUserEmail() {
+        SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
+        String email;
+        email = settings.getString("loggedInEmail", "");
+
+        return email;
     }
 
     private void clearLoginState() {
