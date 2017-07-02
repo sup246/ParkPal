@@ -1,8 +1,13 @@
 package com.psu.sweng500.team4.parkpal;
 
+import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,14 +30,20 @@ import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import static java.lang.Integer.parseInt;
 
 public class GMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
 
     private GoogleMap mMap;
     private ArrayList<Location> mLocations;
     private LayoutInflater mInflater;
+    Geocoder geocoder;
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
 
     public GMapFragment() {}
@@ -117,34 +129,66 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
     }
 
     @Override
-    public View getInfoContents(Marker marker) {
-        View v = getLayoutInflater(Bundle.EMPTY).inflate(R.layout.marker_info_layout, null );
+    public View getInfoContents(Marker marker)  {
+        View v = getLayoutInflater(Bundle.EMPTY).inflate(R.layout.marker_info_layout, null);
+
+        Location clickedLocation = (Location)marker.getTag();
         TextView tvLocation = (TextView) v.findViewById(R.id.tvLocation);
-        TextView tvLat = (TextView) v.findViewById(R.id.tvLat);
-        TextView tvLng = (TextView) v.findViewById(R.id.tvLng);
         TextView tvSnippet = (TextView) v.findViewById(R.id.tvSnippet);
+        TextView tvPhone = (TextView) v.findViewById(R.id.tvPhone);
+        TextView tvAddress = (TextView) v.findViewById(R.id.tvAddress);
+        TextView tvAmenities = (TextView) v.findViewById(R.id.tvAmenities);
+        TextView tvSeason = (TextView) v.findViewById(R.id.tvSeason);
 
         //get marker current location
         LatLng latLng = marker.getPosition();
+        //get street address from geocoder
+        Address addr = AddressFinder(latLng);
+
         //sets the variables created above to the current information
         tvLocation.setText(marker.getTitle());
-        tvLat.setText("Latitude: " + latLng.latitude);
-        tvLng.setText("Longitude: " + latLng.longitude);
+        // Snippet returns city and state
         tvSnippet.setText(marker.getSnippet());
+        tvSeason.setText("Dates Open: " + clickedLocation.getDatesOpen());
+        //TODO - Add icons to represent the various amenities
+        tvAmenities.setText(clickedLocation.getAmenities());
+        //TODO - Add weather info
+
+        //set Phone Number from database
+        if (clickedLocation.getPhone() == null){
+            tvPhone.setText("Phone Number N/A");
+        }else{
+            tvPhone.setText(clickedLocation.getPhone());
+        }
+        //sets address from the Lat/Lng from geocoder conversion
+        if (addr.getAddressLine(0) == null) {
+            tvAddress.setText("Address N/A");
+        }else{
+                tvAddress.setText(addr.getAddressLine(0));
+            }
 
         return v;
     }
 
     public void createLocationMarkers() {
         for (Location l: mLocations) {
-            mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
+            Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(),
                     l.getLongitude())).title(l.getName())
-                    .snippet(l.getPhone())
-                    .snippet(l.getAmenities())
+                    .snippet(l.getTown() + "," + l.getState())
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.campsite_markergrsm)));
+            marker.setTag(l);
         }
     }
-
+    private Address AddressFinder(LatLng latLong){
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        List<Address> addresses = null;
+       try {
+           addresses = geocoder.getFromLocation(latLong.latitude, latLong.longitude, 1);
+       }
+       catch (IOException exception){
+       }
+        return addresses.get(0);
+    }
     private void pullLocationExample() {
 
         try {
