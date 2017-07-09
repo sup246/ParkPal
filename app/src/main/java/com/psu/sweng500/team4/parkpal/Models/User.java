@@ -1,10 +1,12 @@
 package com.psu.sweng500.team4.parkpal.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by phuizar on 6/14/2017.
  */
 
-public class User {
+public class User implements Serializable{
 
     @com.google.gson.annotations.SerializedName("username")
     private String username;

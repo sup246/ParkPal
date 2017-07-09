@@ -37,7 +37,6 @@ public class ProfileFragment extends Fragment {
     private View progressContainer;
     Button mSaveButton;
 
-    private String uEmail;
     private User ProfileUser;
 
     public ProfileFragment() {
@@ -48,9 +47,9 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        uEmail = this.getArguments().getString("email");
+        ProfileUser = (User) this.getArguments().getSerializable("user");
 
-        Log.d("INFO", "email : " + uEmail);
+        Log.d("INFO", "email : " + ProfileUser.getEmail());
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
     /*    TabHost tabHost = (TabHost)v.findViewById(R.id.tabHost);
@@ -133,42 +132,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void populateProfile(){
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                final MobileServiceTable<User> table = mobileServiceUserTable();
-                try {
-                    final MobileServiceList<User> results = table
-                            .where()
-                            .field("email")
-                            .eq(uEmail)
-                            .execute()
-                            .get();
-
-                    ProfileUser = results.get(0);
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mUsernameView.setText(ProfileUser.getUsername());
-                            mFirstNameView.setText(ProfileUser.getFirstName());
-                            mLastNameView.setText(ProfileUser.getLastName());
-                            mBirthDateView.setText(ProfileUser.getBirthdate());
-                            mEmailView.setText(ProfileUser.getEmail());
-                            mZipCodeView.setText(ProfileUser.getZipCode());
-                            progressContainer.setVisibility(View.INVISIBLE);
-
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();
-
-
+        mUsernameView.setText(ProfileUser.getUsername());
+        mFirstNameView.setText(ProfileUser.getFirstName());
+        mLastNameView.setText(ProfileUser.getLastName());
+        mBirthDateView.setText(ProfileUser.getBirthdate());
+        mEmailView.setText(ProfileUser.getEmail());
+        mZipCodeView.setText(ProfileUser.getZipCode());
+        progressContainer.setVisibility(View.INVISIBLE);
     }
-
 }

@@ -357,6 +357,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
+            mEmailView.setText(acct.getEmail());
             saveLoginState();
 
             // TODO Check if user has profile in ParkPal
@@ -365,8 +366,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
             } else { // Register
-                //Intent intent = new Intent(this, ProfileActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         } else {
             // Signed out, show unauthenticated UI.
@@ -502,8 +503,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("hasLoggedIn", true);
         editor.putString("loggedInEmail", mEmailView.getText().toString());
-
-        // TODO Save google or email details
 
         editor.commit();
     }

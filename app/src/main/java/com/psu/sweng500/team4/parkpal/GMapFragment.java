@@ -1,22 +1,21 @@
 package com.psu.sweng500.team4.parkpal;
 
-import android.app.Application;
-import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,23 +27,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
+import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static java.lang.Integer.parseInt;
-
-public class GMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.InfoWindowAdapter {
+public class GMapFragment extends Fragment implements
+        OnMapReadyCallback,
+        GoogleMap.InfoWindowAdapter,
+        GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private ArrayList<Location> mLocations;
     private LayoutInflater mInflater;
     Geocoder geocoder;
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
+    private User mCurrentUser;
 
     public GMapFragment() {}
 
@@ -56,6 +57,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mCurrentUser = (User) getArguments().getSerializable("User");
         mInflater = inflater;
         return mInflater.inflate(R.layout.fragment_map, container, false);
     }
@@ -85,6 +87,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setInfoWindowAdapter(this);
+        mMap.setOnInfoWindowClickListener(this);
 
         if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -126,6 +129,14 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public View getInfoWindow(Marker marker) {
         return null;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent intent = new Intent(this.getActivity(), ParkDetails.class);
+        intent.putExtra("Location", (Location)marker.getTag());
+        intent.putExtra("User", mCurrentUser);
+        startActivityForResult(intent, 999);
     }
 
     @Override
@@ -179,6 +190,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
             marker.setTag(l);
         }
     }
+
     private Address AddressFinder(LatLng latLong){
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         List<Address> addresses = null;
@@ -189,6 +201,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback, Google
        }
         return addresses.get(0);
     }
+
     private void pullLocationExample() {
 
         try {

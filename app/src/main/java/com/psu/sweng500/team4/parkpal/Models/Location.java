@@ -1,10 +1,12 @@
 package com.psu.sweng500.team4.parkpal.Models;
 
+import java.io.Serializable;
+
 /**
  * Created by brhoads on 6/10/2017.
  */
 
-public class Location {
+public class Location implements Serializable {
 
     @com.google.gson.annotations.SerializedName("LOC_ID")
     private long locId;
