@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -24,6 +26,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -43,6 +46,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.UserQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.util.ArrayList;
@@ -357,18 +362,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            mEmailView.setText(acct.getEmail());
+            String email = acct.getEmail();
+            mEmailView.setText(email);
             saveLoginState();
 
-            // TODO Check if user has profile in ParkPal
-
-            if (true) { // If registered
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-            } else { // Register
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
+            // Check if user has ParkPal account
+            UserQueryTask asyncQuery = new UserQueryTask(new AsyncResponse(){
+                @Override
+                public void processFinish(Object result){
+                    if (result != null) { // If registered
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    } else { // Register
+                        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                        startActivity(intent);
+                    }
+                }
+            }, email);
+            asyncQuery.execute();
         } else {
             // Signed out, show unauthenticated UI.
             // TODO Clear entries

@@ -137,6 +137,14 @@ public class MainActivity extends AppCompatActivity {
             public void processFinish(Object result){
                 Log.d("INFO", "Result : " + result);
 
+                // Couldn't find user for some reason, logout
+                if (result == null)
+                {
+                    clearLoginState();
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+
                 mCurrentUser = (User) result;
 
                 MenuItem profileName = mOptionMenu.findItem(R.id.option_username);

@@ -1,13 +1,9 @@
 package com.psu.sweng500.team4.parkpal;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,9 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TabHost;
 
-import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
@@ -37,7 +31,7 @@ public class ProfileFragment extends Fragment {
     private View progressContainer;
     Button mSaveButton;
 
-    private User ProfileUser;
+    private User profileUser;
 
     public ProfileFragment() {
 
@@ -47,9 +41,9 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        ProfileUser = (User) this.getArguments().getSerializable("user");
+        profileUser = (User) this.getArguments().getSerializable("User");
 
-        Log.d("INFO", "email : " + ProfileUser.getEmail());
+        Log.d("INFO", "email : " + profileUser.getEmail());
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
     /*    TabHost tabHost = (TabHost)v.findViewById(R.id.tabHost);
@@ -99,18 +93,18 @@ public class ProfileFragment extends Fragment {
 
     private void saveChanges(){
 
-        ProfileUser.setFirstName(mFirstNameView.getText().toString());
-        ProfileUser.setLastName(mLastNameView.getText().toString());
-        ProfileUser.setEmail(mEmailView.getText().toString());
-        ProfileUser.setBirthdate(mBirthDateView.getText().toString());
-        ProfileUser.setZipCode(mZipCodeView.getText().toString());
+        profileUser.setFirstName(mFirstNameView.getText().toString());
+        profileUser.setLastName(mLastNameView.getText().toString());
+        profileUser.setEmail(mEmailView.getText().toString());
+        profileUser.setBirthdate(mBirthDateView.getText().toString());
+        profileUser.setZipCode(mZipCodeView.getText().toString());
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
 
                 try {
-                    updateUserProfile(ProfileUser);
+                    updateUserProfile(profileUser);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {
@@ -132,12 +126,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void populateProfile(){
-        mUsernameView.setText(ProfileUser.getUsername());
-        mFirstNameView.setText(ProfileUser.getFirstName());
-        mLastNameView.setText(ProfileUser.getLastName());
-        mBirthDateView.setText(ProfileUser.getBirthdate());
-        mEmailView.setText(ProfileUser.getEmail());
-        mZipCodeView.setText(ProfileUser.getZipCode());
+        mUsernameView.setText(profileUser.getUsername());
+        mFirstNameView.setText(profileUser.getFirstName());
+        mLastNameView.setText(profileUser.getLastName());
+        mBirthDateView.setText(profileUser.getBirthdate());
+        mEmailView.setText(profileUser.getEmail());
+        mZipCodeView.setText(profileUser.getZipCode());
         progressContainer.setVisibility(View.INVISIBLE);
     }
 }

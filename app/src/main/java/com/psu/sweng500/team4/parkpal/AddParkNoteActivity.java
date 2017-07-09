@@ -34,6 +34,8 @@ public class AddParkNoteActivity extends AppCompatActivity {
         mSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Date now = new Date();
+
                 // Do Add
                 ParkNotesInsertTask insertNote = new ParkNotesInsertTask(new AsyncResponse() {
                         @Override

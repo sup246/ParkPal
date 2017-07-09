@@ -35,6 +35,11 @@ public class UserQueryTask extends DBQueryTask {
                     .field("email").eq(email)
                     .execute().get();
 
+            // User not found
+            if (queryResults.isEmpty()) {
+                return null;
+            }
+
             currentUser = queryResults.get(0);
 
             String prettyName = currentUser.getFirstName() + " " + currentUser.getLastName();
