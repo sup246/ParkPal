@@ -57,14 +57,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getLoggedInUser();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        getLoggedInUser();
 //        //Manually displaying the first fragment - one time only
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 //        Bundle bundle = new Bundle();
@@ -109,10 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
                 return true;
             case R.id.option_logout:
-                clearLoginState();
-
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
+                logout();
 
                 return true;
             default:
@@ -122,8 +119,14 @@ public class MainActivity extends AppCompatActivity {
 
     private String getLoggedInUser() {
         SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
-        String email;
-        email = settings.getString("loggedInEmail", "");
+        String email = settings.getString("loggedInEmail", "");
+
+        // Couldn't find user for some reason, logout
+        if (email == null || email.isEmpty())
+        {
+            logout();
+            return null;
+        }
 
         setCurrentUser(email);
 
@@ -140,9 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 // Couldn't find user for some reason, logout
                 if (result == null)
                 {
-                    clearLoginState();
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
+                    logout();
                 }
 
                 mCurrentUser = (User) result;
@@ -164,10 +165,13 @@ public class MainActivity extends AppCompatActivity {
         asyncQuery.execute();
     }
 
-    private void clearLoginState() {
+    private void logout() {
         SharedPreferences sharedpreferences = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
+
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }

@@ -76,6 +76,13 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
 //        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
+
+        String email = getIntent().getStringExtra("email");
+        String password = getIntent().getStringExtra("password");
+
+        mEmailView.setText(email);
+        mPasswordView.setText(password);
+
         mConfirmPasswordView = (EditText) findViewById(R.id.conPassword);
         mFirstNameView = (EditText) findViewById(R.id.firstName);
         mLastNameView = (EditText) findViewById(R.id.lastName);

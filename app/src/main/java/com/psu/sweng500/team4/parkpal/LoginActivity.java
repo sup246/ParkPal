@@ -79,6 +79,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private String mEmail = null;
+    private String mPassword = null;
+    private static boolean azureAdapterInited = false;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -116,9 +119,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         });
 
         try {
-            //Initialization of the AzureServiceAdapter to make it usable in the app.
-            AzureServiceAdapter.Initialize(this);
-            Log.d("INFO", "AzureServiceAdapter initialized");
+            if (azureAdapterInited == false) {
+                //Initialization of the AzureServiceAdapter to make it usable in the app.
+                AzureServiceAdapter.Initialize(this);
+                Log.d("INFO", "AzureServiceAdapter initialized");
+                azureAdapterInited = true;
+            }
         } catch (Exception e) {
             Log.e("ParkPal", "exception", e);
         }
@@ -362,8 +368,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            String email = acct.getEmail();
-            mEmailView.setText(email);
+            mEmail = acct.getEmail();
             saveLoginState();
 
             // Check if user has ParkPal account
@@ -375,10 +380,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         startActivity(intent);
                     } else { // Register
                         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                        intent.putExtra("email", mEmail);
                         startActivity(intent);
                     }
                 }
-            }, email);
+            }, mEmail);
             asyncQuery.execute();
         } else {
             // Signed out, show unauthenticated UI.
@@ -419,9 +425,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Object, Object, Integer> {
-
-        private final String mEmail;
-        private final String mPassword;
 
         private static final int SIGNED_IN = 9001;
         private static final int NEW_USER = 9003;
@@ -490,6 +493,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 mPasswordView.requestFocus();
             } else {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                intent.putExtra("email", mEmail);
+                intent.putExtra("password", mPassword);
                 startActivity(intent);
             }
         }
@@ -513,7 +518,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         SharedPreferences settings = getSharedPreferences("PARKPAL", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("hasLoggedIn", true);
-        editor.putString("loggedInEmail", mEmailView.getText().toString());
+        editor.putString("loggedInEmail", mEmail);
 
         editor.commit();
     }
