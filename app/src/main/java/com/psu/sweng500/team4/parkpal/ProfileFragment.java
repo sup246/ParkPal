@@ -11,9 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.UserPrefsUpdateTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.util.concurrent.ExecutionException;
@@ -28,10 +33,20 @@ public class ProfileFragment extends Fragment {
     private EditText mFirstNameView;
     private EditText mLastNameView;
     private EditText mZipCodeView;
+    private Switch mKids;
+    private Switch mDogs;
+    private Switch mWatersports;
+    private Switch mHiking;
+    private Switch mCamping;
+    private Switch mForest;
+    private Switch mDesert;
+    private Switch mMountain;
+    private Switch mBeach;
     private View progressContainer;
     Button mSaveButton;
 
     private User profileUser;
+    private UserPrefs userPrefs;
 
     public ProfileFragment() {
 
@@ -61,6 +76,15 @@ public class ProfileFragment extends Fragment {
         mBirthDateView = (EditText) v.findViewById(R.id.birthdate);
         mUsernameView = (EditText) v.findViewById(R.id.userName);
         mZipCodeView = (EditText) v.findViewById(R.id.zipCode);
+        mKids = (Switch) v.findViewById(R.id.prefs_kids);
+        mDogs = (Switch) v.findViewById(R.id.prefs_dogs);
+        mWatersports = (Switch) v.findViewById(R.id.prefs_watersports);
+        mHiking = (Switch) v.findViewById(R.id.prefs_hiking);
+        mCamping = (Switch) v.findViewById(R.id.prefs_camping);
+        mForest = (Switch) v.findViewById(R.id.prefs_forest);
+        mDesert = (Switch) v.findViewById(R.id.prefs_desert);
+        mMountain = (Switch) v.findViewById(R.id.prefs_mountain);
+        mBeach = (Switch) v.findViewById(R.id.prefs_beach);
         mSaveButton = (Button) v.findViewById(R.id.save);
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +95,11 @@ public class ProfileFragment extends Fragment {
                 progressContainer.setVisibility(View.INVISIBLE);
 
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content, new GMapFragment());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("User", profileUser);
+                Fragment fragment = GMapFragment.newInstance();
+                fragment.setArguments(bundle);
+                transaction.replace(R.id.content, fragment);
                 transaction.commit();
 
             }
@@ -123,6 +151,29 @@ public class ProfileFragment extends Fragment {
                 return null;
             }
         }.execute();
+
+        userPrefs.setPrefs_kids(mKids.isChecked());
+        userPrefs.setPrefs_dogs(mDogs.isChecked());
+        userPrefs.setPrefs_watersports(mWatersports.isChecked());
+        userPrefs.setPrefs_camping(mCamping.isChecked());
+        userPrefs.setPrefs_hiking(mHiking.isChecked());
+        userPrefs.setPrefs_forest(mForest.isChecked());
+        userPrefs.setPrefs_mountain(mMountain.isChecked());
+        userPrefs.setPrefs_desert(mDesert.isChecked());
+        userPrefs.setPrefs_beach(mBeach.isChecked());
+
+        updatePrefs(userPrefs);
+    }
+
+    private void updatePrefs(UserPrefs prefs){
+        // Populate prefs
+        UserPrefsUpdateTask asyncQuery = new UserPrefsUpdateTask(new AsyncResponse(){
+            @Override
+            public void processFinish(Object result){
+            }
+        }, prefs);
+
+        asyncQuery.execute();
     }
 
     private void populateProfile(){
@@ -133,5 +184,30 @@ public class ProfileFragment extends Fragment {
         mEmailView.setText(profileUser.getEmail());
         mZipCodeView.setText(profileUser.getZipCode());
         progressContainer.setVisibility(View.INVISIBLE);
+
+        // Populate prefs
+        UserPrefsQueryTask asyncQuery = new UserPrefsQueryTask(new AsyncResponse(){
+            @Override
+            public void processFinish(Object result){
+                if (result == null) {
+                    userPrefs = new UserPrefs(profileUser.getEmail());
+                }
+                else {
+                    userPrefs = (UserPrefs) result;
+                }
+
+                mKids.setChecked(userPrefs.isPrefs_kids());
+                mDogs.setChecked(userPrefs.isPrefs_dogs());
+                mWatersports.setChecked(userPrefs.isPrefs_watersports());
+                mCamping.setChecked(userPrefs.isPrefs_camping());
+                mHiking.setChecked(userPrefs.isPrefs_hiking());
+                mForest.setChecked(userPrefs.isPrefs_forest());
+                mDesert.setChecked(userPrefs.isPrefs_desert());
+                mMountain.setChecked(userPrefs.isPrefs_mountain());
+                mBeach.setChecked(userPrefs.isPrefs_beach());
+            }
+        }, profileUser.getUsername());
+
+        asyncQuery.execute();
     }
 }

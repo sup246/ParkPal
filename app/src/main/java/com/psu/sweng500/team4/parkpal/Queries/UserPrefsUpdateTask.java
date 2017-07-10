@@ -13,11 +13,10 @@ public class UserPrefsUpdateTask extends DBQueryTask {
 
     private static final int SUCCESS = 200;
 
-    public UserPrefsUpdateTask(AsyncResponse delegate, String username, UserPrefs userPrefs){
+    public UserPrefsUpdateTask(AsyncResponse delegate, UserPrefs userPrefs){
         super();
 
         this.delegate = delegate;
-
         this.userPrefs = userPrefs;
 
     }

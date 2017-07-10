@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 //import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 //import com.google.android.gms.auth.api.Auth;
@@ -37,6 +38,10 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.microsoft.windowsazure.mobileservices.table.TableOperationCallback;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.UserPrefsInsertTask;
+import com.psu.sweng500.team4.parkpal.Queries.UserPrefsUpdateTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.text.ParseException;
@@ -64,8 +69,19 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
     private EditText mFirstNameView;
     private EditText mLastNameView;
     private EditText mZipCodeView;
+    private Switch mKids;
+    private Switch mDogs;
+    private Switch mWatersports;
+    private Switch mHiking;
+    private Switch mCamping;
+    private Switch mForest;
+    private Switch mDesert;
+    private Switch mMountain;
+    private Switch mBeach;
     private View mProgressView;
     private View mRegistrationFormView;
+
+    private UserPrefs userPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +116,16 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
                 return false;
             }
         });
+
+        mKids = (Switch) findViewById(R.id.prefs_kids);
+        mDogs = (Switch) findViewById(R.id.prefs_dogs);
+        mWatersports = (Switch) findViewById(R.id.prefs_watersports);
+        mHiking = (Switch) findViewById(R.id.prefs_hiking);
+        mCamping = (Switch) findViewById(R.id.prefs_camping);
+        mForest = (Switch) findViewById(R.id.prefs_forest);
+        mDesert = (Switch) findViewById(R.id.prefs_desert);
+        mMountain = (Switch) findViewById(R.id.prefs_mountain);
+        mBeach = (Switch) findViewById(R.id.prefs_beach);
 
    /*     try {
             //Initialization of the AzureServiceAdapter to make it usable in the app.
@@ -150,6 +176,17 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
         String firstName = mFirstNameView.getText().toString();
         String lastName = mLastNameView.getText().toString();
         String zipCode = mZipCodeView.getText().toString();
+
+        userPrefs = new UserPrefs(username);
+        userPrefs.setPrefs_kids(mKids.isChecked());
+        userPrefs.setPrefs_dogs(mDogs.isChecked());
+        userPrefs.setPrefs_watersports(mWatersports.isChecked());
+        userPrefs.setPrefs_camping(mCamping.isChecked());
+        userPrefs.setPrefs_hiking(mHiking.isChecked());
+        userPrefs.setPrefs_forest(mForest.isChecked());
+        userPrefs.setPrefs_mountain(mMountain.isChecked());
+        userPrefs.setPrefs_desert(mDesert.isChecked());
+        userPrefs.setPrefs_beach(mBeach.isChecked());
 
         boolean cancel = false;
         View focusView = null;
@@ -225,6 +262,15 @@ public class RegisterActivity extends AppCompatActivity implements LoaderCallbac
             mAuthTask2 = new UserRegistrationTask(email, password, conPassword, birthDate,
                     username, firstName, lastName, zipCode);
             mAuthTask2.execute((Void) null);
+
+            // Populate prefs
+            UserPrefsInsertTask asyncQuery = new UserPrefsInsertTask(new AsyncResponse(){
+                @Override
+                public void processFinish(Object result){
+                }
+            }, userPrefs);
+
+            asyncQuery.execute();
         }
     }
 

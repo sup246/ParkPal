@@ -41,17 +41,16 @@ public class UserPrefsQueryTask extends DBQueryTask {
 
             userPrefs = queryResults.get(0);
 
-            // TODO FIX THIS
-//            Log.d("INFO", "Result (" + username + "):\n" +
-//                    "Kids: " + userPrefs.isPrefs_kids() + "\n" +
-//                    "Dogs: " + userPrefs.isPrefs_dogs() + "\n" +
-//                    "Watersports: " + userPrefs.isPrefs_watersports() + "\n" +
-//                    "Camping: " + userPrefs.isPrefs_camping() + "\n" +
-//                    "Hiking: " + userPrefs.isPrefs_hiking() + "\n" +
-//                    "Forest: " + userPrefs.isPrefs_forest() + "\n" +
-//                    "Mountain: " + userPrefs.isPrefs_mountain() + "\n" +
-//                    "Desert: " + userPrefs.isPrefs_desert() + "\n" +
-//                    "Beach: " + userPrefs.isPrefs_beach() + "\n" );
+            Log.d("INFO", "Result (" + username + "):\n" +
+                    "Kids: " + userPrefs.isPrefs_kids() + "\n" +
+                    "Dogs: " + userPrefs.isPrefs_dogs() + "\n" +
+                    "Watersports: " + userPrefs.isPrefs_watersports() + "\n" +
+                    "Camping: " + userPrefs.isPrefs_camping() + "\n" +
+                    "Hiking: " + userPrefs.isPrefs_hiking() + "\n" +
+                    "Forest: " + userPrefs.isPrefs_forest() + "\n" +
+                    "Mountain: " + userPrefs.isPrefs_mountain() + "\n" +
+                    "Desert: " + userPrefs.isPrefs_desert() + "\n" +
+                    "Beach: " + userPrefs.isPrefs_beach() + "\n" );
         } catch (Exception e) {
             e.printStackTrace();
         }

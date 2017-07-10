@@ -20,7 +20,6 @@ public class UserPrefsInsertTask extends DBQueryTask {
 
         this.delegate = delegate;
         this.userPrefs = userPrefs;
-
     }
 
     @Override

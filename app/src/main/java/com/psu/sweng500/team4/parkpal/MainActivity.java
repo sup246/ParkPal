@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 if (result == null)
                 {
                     logout();
+                    return;
                 }
 
                 mCurrentUser = (User) result;
