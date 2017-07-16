@@ -14,9 +14,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.UserQueryTask;
+
+import com.microsoft.windowsazure.notifications.NotificationsManager;
+import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Services.NotificationService;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private User mCurrentUser;
     private Menu mOptionMenu;
+    public static final String SENDER_ID = "654566160966";
+    public static MobileServiceClient mClient;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -64,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        NotificationsManager.handleNotifications(this, SENDER_ID, NotificationService.class);
+
+        mClient = AzureServiceAdapter.getInstance().getClient();
 
 //        //Manually displaying the first fragment - one time only
 //        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
