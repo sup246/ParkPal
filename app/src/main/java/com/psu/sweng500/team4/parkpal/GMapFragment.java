@@ -146,37 +146,19 @@ public class GMapFragment extends Fragment implements
         Location clickedLocation = (Location)marker.getTag();
         TextView tvLocation = (TextView) v.findViewById(R.id.tvLocation);
         TextView tvSnippet = (TextView) v.findViewById(R.id.tvSnippet);
-        TextView tvPhone = (TextView) v.findViewById(R.id.tvPhone);
-        TextView tvAddress = (TextView) v.findViewById(R.id.tvAddress);
         TextView tvAmenities = (TextView) v.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) v.findViewById(R.id.tvSeason);
-
-        //get marker current location
-        LatLng latLng = marker.getPosition();
-        //get street address from geocoder
-        Address addr = AddressFinder(latLng);
 
         //sets the variables created above to the current information
         tvLocation.setText(marker.getTitle());
         // Snippet returns city and state
         tvSnippet.setText(marker.getSnippet());
+        //sets date open
         tvSeason.setText("Dates Open: " + clickedLocation.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(clickedLocation.getAmenities());
         //TODO - Add weather info
 
-        //set Phone Number from database
-        if (clickedLocation.getPhone() == null){
-            tvPhone.setText("Phone Number N/A");
-        }else{
-            tvPhone.setText(clickedLocation.getPhone());
-        }
-        //sets address from the Lat/Lng from geocoder conversion
-        if (addr.getAddressLine(0) == null) {
-            tvAddress.setText("Address N/A");
-        }else{
-                tvAddress.setText(addr.getAddressLine(0));
-            }
 
         return v;
     }

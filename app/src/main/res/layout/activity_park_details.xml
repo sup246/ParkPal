@@ -13,16 +13,125 @@
         android:padding="10dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:background="@color/grey">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/tvLocation"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Stuff goes here"
-                android:textAlignment="center" />
+                android:textSize="25sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/phone_icon"
+                android:drawablePadding="5dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/location_icon"
+                android:drawablePadding="5dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvSnippet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvSeason"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/calendar_icon"
+                android:drawablePadding="5dp"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <TextView
+                android:id="@+id/tvAmenities"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Rating"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="@style/Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:rating="4"
+                android:stepSize="1" />
+
+            <TextView
+                android:id="@+id/tvRatNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="(347)"
+                android:textColor="@color/colorAccent"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="Write a Review"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAddReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:text="Share your experience here."
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:paddingTop="15dp"
+                app:srcCompat="@mipmap/ic_addphoto" />
+
+        </LinearLayout>
+
 
         <ExpandableListView
             android:id="@+id/parkNotes"
@@ -30,7 +139,7 @@
             android:layout_height="wrap_content"
             android:groupIndicator="@drawable/group_indicator"
             android:indicatorRight="25dp"
-            android:transcriptMode="alwaysScroll"/>
+            android:transcriptMode="alwaysScroll" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,11 +156,12 @@
                     android:id="@+id/addNote"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Note"
                     android:drawableLeft="@android:drawable/ic_input_add"
+                    android:text="Note"
                     android:textSize="18sp" />
 
             </RelativeLayout>
+
             <RelativeLayout
                 android:layout_width="0dip"
                 android:layout_height="50dp"
@@ -67,4 +177,5 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

@@ -1,13 +1,20 @@
 package com.psu.sweng500.team4.parkpal;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
@@ -15,9 +22,11 @@ import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
@@ -50,6 +59,46 @@ public class ParkDetails extends AppCompatActivity {
                 //addAlert();
             }
         });
+
+       // Location clickedLocation = (Location)marker.getTag();
+        TextView tvLocation = (TextView) this.findViewById(R.id.tvLocation);
+        TextView tvSnippet = (TextView) this.findViewById(R.id.tvSnippet);
+        TextView tvAddress = (TextView) this.findViewById(R.id.tvAddress);
+        TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
+        TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
+        TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
+
+        //get marker current location
+        LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+        //get street address from geocoder
+        Address addr = AddressFinder(latLng);
+
+        //sets the variables created above to the current information
+        tvLocation.setText(mLocation.getName());
+        // Snippet returns city and state
+        tvSnippet.setText(mLocation.getTown() + mLocation.getState());
+        //sets dates open
+        tvSeason.setText("Dates Open: " + mLocation.getDatesOpen());
+        //TODO - Add icons to represent the various amenities
+        tvAmenities.setText(mLocation.getAmenities());
+        //TODO - Add weather info
+
+        //set Phone Number from database
+        if (mLocation.getPhone() == ""){
+            tvPhone.setText("Phone Number N/A");
+        }else{
+            tvPhone.setText(mLocation.getPhone());
+        }
+
+        //sets address from the Lat/Lng from geocoder conversion
+        if (addr.getAddressLine(0) == " ") {
+            tvAddress.setText("Address N/A");
+        }else{
+            tvAddress.setText(addr.getAddressLine(0));
+
+
+        }
+
     }
 
     @Override
@@ -109,5 +158,16 @@ public class ParkDetails extends AppCompatActivity {
         }, locId);
 
         asyncQuery.execute();
+    }
+
+    private Address AddressFinder(LatLng latLong){
+        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latLong.latitude, latLong.longitude, 1);
+        }
+        catch (IOException exception){
+        }
+        return addresses.get(0);
     }
 }
