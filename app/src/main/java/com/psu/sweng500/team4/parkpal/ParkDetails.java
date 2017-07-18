@@ -1,15 +1,21 @@
 package com.psu.sweng500.team4.parkpal;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -21,6 +27,7 @@ import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +38,9 @@ import java.util.Locale;
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
+    private LayoutInflater layoutInflator;
+    private RelativeLayout layout;
+    private PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,7 @@ public class ParkDetails extends AppCompatActivity {
         mLocation = (Location) getIntent().getSerializableExtra("Location");
         getListInfo(mLocation.getLocId());
         mCurrentUser = (User) getIntent().getSerializableExtra("User");
+        //WeatherService mWeatherService = new WeatherService(this);
 
         Button mAddNoteButton = (Button) findViewById(R.id.addNote);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +71,29 @@ public class ParkDetails extends AppCompatActivity {
             }
         });
 
+        Button mAddReview = (Button) findViewById(R.id.addReview);
+        layout = (RelativeLayout)findViewById(R.id.rLayout);
+
+        mAddReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layoutInflator = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+                ViewGroup userReview = (ViewGroup) layoutInflator.inflate(R.layout.park_review_layout, null);
+                popupWindow = new PopupWindow(userReview, 1000, 500, true);
+                popupWindow.showAtLocation(layout, Gravity.NO_GRAVITY, 20, 500);
+
+                //close window - TODO - Add Save button to save back to the database
+                userReview.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        popupWindow.dismiss();
+                        return true;
+                    }
+                });
+            }
+        });
+        //PopupWindow mUserReview =
+
        // Location clickedLocation = (Location)marker.getTag();
         TextView tvLocation = (TextView) this.findViewById(R.id.tvLocation);
         TextView tvSnippet = (TextView) this.findViewById(R.id.tvSnippet);
@@ -67,6 +101,7 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
+        //TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
 
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -82,6 +117,7 @@ public class ParkDetails extends AppCompatActivity {
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(mLocation.getAmenities());
         //TODO - Add weather info
+       // mWeatherService.execute(mLocation.getLatitude(), mLocation.getLongitude());
 
         //set Phone Number from database
         if (mLocation.getPhone() == ""){
@@ -95,8 +131,6 @@ public class ParkDetails extends AppCompatActivity {
             tvAddress.setText("Address N/A");
         }else{
             tvAddress.setText(addr.getAddressLine(0));
-
-
         }
 
     }
