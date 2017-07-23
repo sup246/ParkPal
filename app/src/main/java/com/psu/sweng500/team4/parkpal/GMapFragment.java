@@ -27,11 +27,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
+import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
+import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +51,7 @@ public class GMapFragment extends Fragment implements
     Geocoder geocoder;
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
     private User mCurrentUser;
+    private TextView tvAlerts;
 
     public GMapFragment() {}
 
@@ -148,6 +154,7 @@ public class GMapFragment extends Fragment implements
         TextView tvSnippet = (TextView) v.findViewById(R.id.tvSnippet);
         TextView tvAmenities = (TextView) v.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) v.findViewById(R.id.tvSeason);
+        tvAlerts = (TextView) v.findViewById(R.id.tvAlerts);
 
         //sets the variables created above to the current information
         tvLocation.setText(marker.getTitle());
@@ -159,8 +166,43 @@ public class GMapFragment extends Fragment implements
         tvAmenities.setText(clickedLocation.getAmenities());
         //TODO - Add weather info
 
-
+        //TODO - Get location alerts
         return v;
+    }
+
+    private void getLocationAlerts(long locId, final Marker marker){
+
+        ParkAlertsQueryTask asyncQuery = new ParkAlertsQueryTask(new AsyncResponse(){
+
+            @Override
+            public void processFinish(Object result){
+                for (Object o : (List<ParkAlert>) result)
+                {
+                    ParkAlert alert = (ParkAlert)o;
+                    Log.d("PARK_ALERT", alert.getUsername() + " : " + alert.getAlertMessage());
+                }
+
+                final int alertCount = ((List<ParkAlert>) result).size();
+
+                if(alertCount > 0){
+                    try {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvAlerts.setText(alertCount + "");
+                                Log.d("PARK_ALERT", alertCount + "");
+                                marker.showInfoWindow();
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, locId);
+
+        asyncQuery.execute();
+
     }
 
     public void createLocationMarkers() {

@@ -22,9 +22,11 @@ import android.widget.ExpandableListView;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.psu.sweng500.team4.parkpal.Models.Location;
+import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
@@ -67,7 +69,10 @@ public class ParkDetails extends AppCompatActivity {
         mAddAlertButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //addAlert();
+                Intent intent = new Intent(ParkDetails.this, AddParkAlertActivity.class);
+                intent.putExtra("Location", mLocation);
+                intent.putExtra("User", mCurrentUser);
+                startActivityForResult(intent, 999);
             }
         });
 
@@ -143,7 +148,7 @@ public class ParkDetails extends AppCompatActivity {
 
     private void getListInfo(long locId)  {
 
-        try {
+     /*   try {
             //Initialization of the AzureServiceAdapter to make it usable in the app.
             AzureServiceAdapter.Initialize(getBaseContext());
             Log.d("INFO", "AzureServiceAdapter initialized");
@@ -151,7 +156,7 @@ public class ParkDetails extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("ParkPal", "exception", e);
         }
-
+*/
         // Get park notes
         ParkNotesQueryTask asyncQuery = new ParkNotesQueryTask(new AsyncResponse(){
 
@@ -193,6 +198,8 @@ public class ParkDetails extends AppCompatActivity {
 
         asyncQuery.execute();
     }
+
+
 
     private Address AddressFinder(LatLng latLong){
         Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
