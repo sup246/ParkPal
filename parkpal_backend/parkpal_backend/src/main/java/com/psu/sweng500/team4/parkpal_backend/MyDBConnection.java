@@ -18,13 +18,25 @@ public class MyDBConnection {
             + "database=" + mDBName + ";"
             + "user=" + mDBUserName + ";"
             + "password=" + mDBPass;
+    private Connection connection;
+
+    public MyDBConnection (){
+        try{
+            connection = DriverManager.getConnection(mConnectionUrl);
+            System.out.print("Connected.<br/>");
+        }catch(Exception e){
+            System.out.print("Error message: "+ e.getMessage());
+        }
+    }
+
+    public Connection getConnection(){
+        return connection;
+    }
 
     public HashMap<Integer, String> getAllParks(){
         HashMap<Integer, String> result = new HashMap<Integer, String>();
 
         try{
-            Connection connection = DriverManager.getConnection(mConnectionUrl);
-            System.out.print("Connected.<br/>");
             String SQL = "SELECT loc_id, name FROM LOCATIONS";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
@@ -44,6 +56,41 @@ public class MyDBConnection {
         HashMap<Integer, List<String>> result = new HashMap<>();
 
         try{
+            String SQL = "SELECT loc_id, amenities, loc_type from LOCATIONS";
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(SQL);
+
+            while (rs.next()) {
+                int loc_id = rs.getInt(1);
+                String amenities = rs.getString(2);
+                String loc_type = rs.getString(3);
+                ArrayList<String> tags = new ArrayList<String>();
+
+                System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
+
+                // Add amenities to list
+                for (String tag : amenities.split(" ")){
+                    if (tag != null && !tag.isEmpty()) {
+                        tags.add(tag);
+                    }
+                }
+
+                // Add loc type to list
+                tags.add(loc_type);
+
+                result.put(loc_id, tags);
+            }
+        }catch(Exception e){
+            System.out.print("Error message: "+ e.getMessage());
+        }
+        return result;
+
+    }
+
+    public HashMap<Integer, List<String>> getAllParkRatings(){
+        HashMap<Integer, List<String>> result = new HashMap<>();
+
+        try{
             Connection connection = DriverManager.getConnection(mConnectionUrl);
             System.out.print("Connected.<br/>");
             String SQL = "SELECT loc_id, amenities, loc_type from LOCATIONS";
@@ -75,33 +122,17 @@ public class MyDBConnection {
 
     }
 
-    public HashMap<Integer, List<String>> getAllParkTags(){
-        HashMap<Integer, List<String>> result = new HashMap<>();
+    public HashMap<Integer, String> getAllUsers(){
+        HashMap<Integer, String> result = new HashMap<Integer, String>();
 
         try{
-            Connection connection = DriverManager.getConnection(mConnectionUrl);
-            System.out.print("Connected.<br/>");
-            String SQL = "SELECT loc_id, amenities, loc_type from LOCATIONS";
+            String SQL = "SELECT id, username FROM USERS";
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
 
             while (rs.next()) {
-                int loc_id = rs.getInt(1);
-                String amenities = rs.getString(2);
-                String loc_type = rs.getString(3);
-                ArrayList<String> tags = new ArrayList<String>();
-
-                System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
-
-                // Add amenities to list
-                for (String tag : amenities.split(" ")){
-                    tags.add(tag);
-                }
-
-                // Add loc type to list
-                tags.add(loc_type);
-
-                result.put(loc_id, tags);
+                System.out.print(rs.getString(1) + ": " + rs.getString(2) + "\n");
+                result.put(rs.getInt(1), rs.getString(2));
             }
         }catch(Exception e){
             System.out.print("Error message: "+ e.getMessage());

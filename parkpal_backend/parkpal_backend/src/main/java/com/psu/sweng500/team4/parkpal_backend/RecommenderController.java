@@ -1,5 +1,6 @@
 package com.psu.sweng500.team4.parkpal_backend;
 
+import com.psu.sweng500.team4.parkpal_backend.recommendationEngine.RecommendationEngine;
 import org.grouplens.lenskit.RecommenderBuildException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,10 +11,10 @@ public class RecommenderController {
     @RequestMapping("/recommendations/user/{userId}")
     public String getRecommendations(@PathVariable String userId){
 
-        CBFMain cbf = new CBFMain();
+        RecommendationEngine recommendationEngine = new RecommendationEngine();
         String result = new String();
         try {
-            result = cbf.getRecommendations(userId);
+            result = recommendationEngine.getRecommendations(userId);
         } catch (RecommenderBuildException e) {
             e.printStackTrace();
         }
