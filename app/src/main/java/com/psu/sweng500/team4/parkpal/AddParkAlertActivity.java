@@ -56,7 +56,9 @@ public class AddParkAlertActivity extends AppCompatActivity {
 
                 // Instantiate the RequestQueue.
                 RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                final String url = "http://parkpalapp.azurewebsites.net/api/notification/" + alertMessageTextView.getText().toString();
+                final String url = "http://parkpalapp.azurewebsites.net/api/notification/" +
+                        "[" + location.getName() + "] " +
+                        alertMessageTextView.getText().toString();
 
                 // Request a string response from the provided URL.
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
