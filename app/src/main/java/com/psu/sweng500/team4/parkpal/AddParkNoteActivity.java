@@ -23,8 +23,8 @@ public class AddParkNoteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_park_note);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         final Location location = (Location) getIntent().getSerializableExtra("Location");
         final User currentUser = (User) getIntent().getSerializableExtra("User");

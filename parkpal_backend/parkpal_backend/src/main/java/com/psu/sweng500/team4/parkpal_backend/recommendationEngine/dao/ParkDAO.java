@@ -35,7 +35,7 @@ public class ParkDAO implements ItemParkDAO {
         Iterator it = parks.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
             cache.put((Integer)pair.getKey(),pair.getValue().toString());
             it.remove(); // avoids a ConcurrentModificationException
         }

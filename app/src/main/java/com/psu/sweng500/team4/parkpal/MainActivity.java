@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private User mCurrentUser;
     private Menu mOptionMenu;
+    private String defaultFragment = "GMapFragment";
     public static final String SENDER_ID = "654566160966";
     public static MobileServiceClient mClient;
 
@@ -42,15 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
             Fragment fragment = null;
 
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("User", mCurrentUser);
+
             if (id == R.id.navigation_map) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", mCurrentUser);
                 fragment = GMapFragment.newInstance();
                 fragment.setArguments(bundle);
-            } else if (id == R.id.navigation_search) {
-                fragment = new SearchFragment();
             } else if (id == R.id.navigation_recommendations) {
                 fragment = new RecommendationsFragment();
+                fragment.setArguments(bundle);
             }
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -66,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getLoggedInUser();
 
+        defaultFragment = getIntent().getStringExtra("fragment");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -75,15 +78,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationsManager.handleNotifications(this, SENDER_ID, NotificationService.class);
 
         mClient = AzureServiceAdapter.getInstance().getClient();
-
-//        //Manually displaying the first fragment - one time only
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        Bundle bundle = new Bundle();
-//        bundle.putString("username", getLoggedInUser());
-//        Fragment fragment = GMapFragment.newInstance();
-//        fragment.setArguments(bundle);
-//        transaction.replace(R.id.content, fragment);
-//        transaction.commit();
     }
 
     @Override
@@ -163,11 +157,19 @@ public class MainActivity extends AppCompatActivity {
                 MenuItem profileName = mOptionMenu.findItem(R.id.option_username);
                 profileName.setTitle(mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName());
 
+                Fragment fragment = null;
+
+                if (defaultFragment != null && defaultFragment.equals("recommendations")){
+                    fragment = new RecommendationsFragment();
+                }
+                else {
+                    fragment = GMapFragment.newInstance();
+                }
+
                 //Manually displaying the first fragment - one time only
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("User", mCurrentUser);
-                Fragment fragment = GMapFragment.newInstance();
                 fragment.setArguments(bundle);
                 transaction.replace(R.id.content, fragment);
                 transaction.commit();

@@ -18,6 +18,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/notice.txt'
+    }
     testOptions {
         // Changes the directory where Gradle saves test reports. By default, Gradle saves test reports
         // in the path_to_your_project/module_name/build/outputs/reports/ directory.
@@ -63,6 +70,7 @@ dependencies {
     compile 'com.microsoft.azure:azure-notifications-handler:1.0.1@jar'
     compile 'com.android.support:support-annotations:25.3.1'
     compile 'com.android.volley:volley:1.0.0'
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
 }
 
 apply plugin: 'com.google.gms.google-services'

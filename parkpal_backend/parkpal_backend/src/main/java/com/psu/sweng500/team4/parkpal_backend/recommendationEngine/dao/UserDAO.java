@@ -35,7 +35,7 @@ public class UserDAO implements UserNameDAO {
         Iterator it = users.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
             cache.put(pair.getValue().toString(),(Integer)pair.getKey());
             it.remove(); // avoids a ConcurrentModificationException
         }

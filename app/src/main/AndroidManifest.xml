@@ -40,6 +40,9 @@
            android:name=".ParkDetails"
            android:label="@string/app_name"></activity>
         <activity
+            android:name=".AddParkNoteActivity"
+            android:label="@string/app_name"></activity>
+        <activity
             android:name=".AddParkAlertActivity"
             android:label="@string/app_name"></activity>
         <activity
