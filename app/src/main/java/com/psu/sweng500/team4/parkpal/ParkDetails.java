@@ -1,54 +1,45 @@
 package com.psu.sweng500.team4.parkpal;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
-import android.location.Geocoder;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.RatingBar;
-import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.psu.sweng500.team4.parkpal.Models.Activity;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
-import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
-import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
-import com.psu.sweng500.team4.parkpal.Services.WeatherService;
+import com.squareup.picasso.Picasso;
 
-import java.io.Console;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-
-import static android.app.PendingIntent.getActivity;
 
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
@@ -58,6 +49,9 @@ public class ParkDetails extends AppCompatActivity {
     private ListView alertListV;
 
     private ArrayList<ParkAlert> parkAlerts;
+    private int currImage=0;
+    Context context=this.getApplicationContext();
+    private String userChoosenTask="";
 
     ArrayList<String> alertListItems;
     ArrayAdapter<String> alertAdapter;
@@ -160,6 +154,28 @@ public class ParkDetails extends AppCompatActivity {
         alertListV.setAdapter(alertAdapter);
 
         getAlerts(mLocation.getLocId());
+
+
+        final String images[] = {"https://www.nps.gov/common/uploads/grid_builder/pwr/crop1_1/324D8FBC-1DD8-B71B-0BBE6CB1E8B2D003.jpg?width=640&quality=90&mode=crop",
+                           "http://www.mesaaz.gov/Home/ShowImage?id=12832&amp;t=636131724775470000",
+                           "https://cityofwinterpark.org/wp-content/uploads/2014/05/DinkyDockPark_Field.jpg",
+                           "https://www.arkansasstateparks.com/!userfiles/subheads/asp_int_sub-img_parks_davidsonville.jpg",
+                           "http://www.vhw.org/images/pages/N92/park.jpg"};
+
+
+        /////////////////////////////////////////////////////////
+        ImageView mPhotoImage = (ImageView) findViewById(R.id.imageButton);
+        mPhotoImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectImage();
+            }
+        });
+        ImageView parkView = (ImageView) findViewById(R.id.parkView);
+        Picasso.with(this.getApplicationContext()).load(images[currImage]).into(parkView);
+        /////////////////////////////////////////////////////////
+
+
     }
 
     @Override
@@ -295,4 +311,89 @@ public class ParkDetails extends AppCompatActivity {
 //        return addresses.get(0);
         return null;
     }
+    ////////////////////////////////////////////////////////////////////
+    private void selectImage() {
+        final CharSequence[] items = {"Take Photo", "Choose from Library",
+                "Cancel"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ParkDetails.this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                boolean result = checkPermission(ParkDetails.this);
+                if (items[item].equals("Take Photo")) {
+                    userChoosenTask = "Take Photo";
+                    if (result)
+                        cameraIntent();
+                } else if (items[item].equals("Choose from Library")) {
+                    userChoosenTask = "Choose from Library";
+                    if (result)
+                        galleryIntent();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void cameraIntent() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 1337);
+    }
+
+    private void galleryIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        startActivityForResult(Intent.createChooser(intent, "Select File"), 1337);
+    }
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static boolean checkPermission(final Context context)
+    {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if(currentAPIVersion>=android.os.Build.VERSION_CODES.M)
+        {
+            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+                    alertBuilder.setCancelable(true);
+                    alertBuilder.setTitle("Permission necessary");
+                    alertBuilder.setMessage("External storage permission is necessary");
+                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                    });
+                    AlertDialog alert = alertBuilder.create();
+                    alert.show();
+                } else {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(userChoosenTask.equals("Take Photo"))
+                        cameraIntent();
+                    else if(userChoosenTask.equals("Choose from Library"))
+                        galleryIntent();
+                } else {
+                    //code for deny
+                }
+                break;
+        }
+    }
+    ////////////////////////////////////////////////////////////////////
 }

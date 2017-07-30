@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private String mEmail = null;
     private String mPassword = null;
     private static boolean azureAdapterInited = false;
+    private int loginAttempt = 0;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -464,7 +465,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     final MobileServiceList<User> sub_results =
                             sub_table.where().field("email").eq(mEmail).execute().get();
                     if(sub_results.size()!=0){
+                        loginAttempt=loginAttempt+1;
+                        if(loginAttempt>2){
+                            return NEW_USER;
+                        }
                         return INCORRECT_PASS;
+
                     }
                     else return NEW_USER;
                 }
