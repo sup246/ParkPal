@@ -109,8 +109,6 @@ public class ParkDetails extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
-                intent.putExtra("Location", mLocation);
-                intent.putExtra("User", mCurrentUser);
                 startActivityForResult(intent, 666);
 
             }
