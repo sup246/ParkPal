@@ -4,10 +4,9 @@
     android:layout_height="match_parent"
     tools:context="com.psu.sweng500.team4.parkpal.RecommendationsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
+        android:id="@+id/recommendations"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/title_recommendations" />
-
+        android:clickable="true" />
 </FrameLayout>

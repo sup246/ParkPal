@@ -25,10 +25,11 @@
         android:layout_height="37dp"
         android:layout_gravity="center"
         android:clickable="true"
-        android:contextClickable="false"
-        android:isIndicator="true"
+        android:contextClickable="true"
+        android:isIndicator="false"
         android:numStars="5"
-        android:stepSize="1" />
+        android:stepSize="0.5" />
+
 
     <EditText
         android:id="@+id/addReviewTxt"
@@ -37,7 +38,13 @@
         android:layout_gravity="center"
         android:ems="10"
         android:inputType="textMultiLine"
-        android:text="Share your experience here."
+        android:hint="Share your experience here."
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+    <Button
+        android:id="@+id/btSubmitReview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
 
 </LinearLayout>
