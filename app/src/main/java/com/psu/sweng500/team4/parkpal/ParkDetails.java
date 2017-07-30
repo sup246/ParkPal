@@ -140,11 +140,14 @@ public class ParkDetails extends AppCompatActivity {
         }
 
         //sets address from the Lat/Lng from geocoder conversion
-        //if (addr == null || addr.getAddressLine(0) == " ") {
-        //    tvAddress.setText("Address N/A");
-        //}else{
-        //    tvAddress.setText(addr.getAddressLine(0));
-        //}
+
+/*
+        if (addr == null || addr.getAddressLine(0) == " ") {
+            tvAddress.setText("Address N/A");
+        }else{
+            tvAddress.setText(addr.getAddressLine(0));
+        }
+*/
 
         alertListV = (ListView) this.findViewById(R.id.parkAlerts);
 
