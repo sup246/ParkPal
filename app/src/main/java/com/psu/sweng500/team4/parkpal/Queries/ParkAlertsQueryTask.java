@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.table.query.QueryOrder;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
