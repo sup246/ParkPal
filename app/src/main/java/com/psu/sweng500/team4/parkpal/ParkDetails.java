@@ -2,8 +2,10 @@ package com.psu.sweng500.team4.parkpal;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -27,12 +30,16 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
+import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
+import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Queries.LocationQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
@@ -41,6 +48,8 @@ import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.io.Console;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,7 +79,6 @@ public class ParkDetails extends AppCompatActivity {
         mLocation = (Location) getIntent().getSerializableExtra("Location");
         getListInfo(mLocation.getLocId());
         mCurrentUser = (User) getIntent().getSerializableExtra("User");
-        //WeatherService mWeatherService = new WeatherService(this);
 
         Button mAddNoteButton = (Button) findViewById(R.id.addNote);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +111,7 @@ public class ParkDetails extends AppCompatActivity {
                 Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
                 startActivityForResult(intent, 666);
 
-            };
+            }
         });
 
        // Location clickedLocation = (Location)marker.getTag();
@@ -113,8 +121,6 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
-
-        //TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
 
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -129,8 +135,23 @@ public class ParkDetails extends AppCompatActivity {
         tvSeason.setText("Dates Open: " + mLocation.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(mLocation.getAmenities());
-        //TODO - Add weather info
-       // mWeatherService.execute(mLocation.getLatitude(), mLocation.getLongitude());
+
+        final ImageView iv = (ImageView) this.findViewById(R.id.ivWeatherIcon);
+        final TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
+
+        WeatherService weatherService = new WeatherService(this, new AsyncResponse() {
+            @Override
+            public void processFinish(Object result) {
+                WeatherService weatherService = (WeatherService) result;
+                Weather weather = weatherService.getWeather();
+
+                iv.setImageDrawable(weatherService.getWeatherIcon());
+
+                tvCurrentTemp.setText(weather.getPrettyTempstring());
+            }
+        });
+
+        weatherService.execute(mLocation.getLatitude(), mLocation.getLongitude());
 
         //set Phone Number from database
         if (mLocation.getPhone() == ""){

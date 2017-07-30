@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,15 +31,18 @@ import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class GMapFragment extends Fragment implements
         OnMapReadyCallback,
@@ -52,6 +56,8 @@ public class GMapFragment extends Fragment implements
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
     private User mCurrentUser;
     private TextView tvAlerts;
+//    private ImageView weatherIcon;
+//    private TextView curTemp;
 
     public GMapFragment() {}
 
@@ -155,6 +161,8 @@ public class GMapFragment extends Fragment implements
         TextView tvAmenities = (TextView) v.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) v.findViewById(R.id.tvSeason);
         tvAlerts = (TextView) v.findViewById(R.id.tvAlerts);
+//        weatherIcon = (ImageView) v.findViewById(R.id.markerWeatherIcon);
+//        curTemp = (TextView) v.findViewById(R.id.markerCurrentTemp);
 
         //sets the variables created above to the current information
         tvLocation.setText(marker.getTitle());
@@ -164,9 +172,35 @@ public class GMapFragment extends Fragment implements
         tvSeason.setText("Dates Open: " + clickedLocation.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(clickedLocation.getAmenities());
-        //TODO - Add weather info
+
+//        WeatherService weatherService = null;
+//        try {
+//            weatherService = new WeatherService(this.getContext(), new AsyncResponse() {
+//                @Override
+//                public void processFinish(Object result) {
+//                    final WeatherService weatherService = (WeatherService) result;
+//                    final Weather weather = weatherService.getWeather();
+//
+//                    weatherIcon.setImageDrawable(weatherService.getWeatherIcon());
+//                    curTemp.setText(weather.getPrettyTempstring());
+//
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            weatherIcon.setImageDrawable(weatherService.getWeatherIcon());
+//                            curTemp.setText(weather.getPrettyTempstring());
+//                        }
+//                    });
+//                }
+//            }).execute(clickedLocation.getLatitude(), clickedLocation.getLongitude()).get();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
 
         //TODO - Get location alerts
+
         return v;
     }
 

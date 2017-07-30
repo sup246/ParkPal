@@ -3,7 +3,14 @@ package com.psu.sweng500.team4.parkpal.Models.Weather;
 /**
  * Created by brhoads on 7/1/2017.
  */
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -142,5 +149,8 @@ public class Weather {
         this.cod = cod;
     }
 
-
+    public String getPrettyTempstring() {
+        char degree = (char) 0x00B0;
+        return this.getMain().getTemp().toString() + degree;
+    }
 }
