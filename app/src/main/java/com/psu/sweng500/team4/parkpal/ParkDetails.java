@@ -12,13 +12,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.psu.sweng500.team4.parkpal.Models.Location;
@@ -31,18 +35,24 @@ import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static android.app.PendingIntent.getActivity;
+
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
     private LayoutInflater layoutInflator;
     private RelativeLayout layout;
-    private PopupWindow popupWindow;
+    //private PopupWindow popupWindow;
+    //private RatingBar ratingBar;
+    //private Button submitButton;
+    //private SimpleCursorAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,23 +91,12 @@ public class ParkDetails extends AppCompatActivity {
 
         mAddReview.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                layoutInflator = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                ViewGroup userReview = (ViewGroup) layoutInflator.inflate(R.layout.park_review_layout, null);
-                popupWindow = new PopupWindow(userReview, 1000, 500, true);
-                popupWindow.showAtLocation(layout, Gravity.NO_GRAVITY, 20, 500);
+            public void onClick(View v){
+                Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
+                startActivityForResult(intent, 666);
 
-                //close window - TODO - Add Save button to save back to the database
-                userReview.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        popupWindow.dismiss();
-                        return true;
-                    }
-                });
-            }
+            };
         });
-        //PopupWindow mUserReview =
 
        // Location clickedLocation = (Location)marker.getTag();
         TextView tvLocation = (TextView) this.findViewById(R.id.tvLocation);
@@ -111,7 +110,7 @@ public class ParkDetails extends AppCompatActivity {
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
         //get street address from geocoder
-        Address addr = AddressFinder(latLng);
+       // Address addr = AddressFinder(latLng);
 
         //sets the variables created above to the current information
         tvLocation.setText(mLocation.getName());
@@ -131,19 +130,42 @@ public class ParkDetails extends AppCompatActivity {
             tvPhone.setText(mLocation.getPhone());
         }
 
-        //sets address from the Lat/Lng from geocoder conversion
+/*        //sets address from the Lat/Lng from geocoder conversion
         if (addr.getAddressLine(0) == " ") {
             tvAddress.setText("Address N/A");
         }else{
             tvAddress.setText(addr.getAddressLine(0));
-        }
+        }*/
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Refresh the park notes after one has been inserted
-        getListInfo(mLocation.getLocId());
+
+        if (requestCode == 666)
+        {
+            RelativeLayout layout = (RelativeLayout)findViewById(R.id.ratingId);
+            layout.setVisibility(View.VISIBLE);
+
+            String comment = data.getStringExtra("Comment");
+            float stars = data.getFloatExtra("Stars", 0);
+
+            TextView userName = (TextView)findViewById(R.id.tvProfileName);
+            MainActivity ma = new MainActivity();
+            userName.setText(mCurrentUser.getUsername());
+
+            RatingBar userRating = (RatingBar)findViewById(R.id.userRatingBar);
+            userRating.setRating(stars);
+
+            TextView userComment = (TextView)findViewById(R.id.tvRatingComment);
+            userComment.setText(comment.toString());
+
+            Button reviewButton = (Button)findViewById(R.id.addReview);
+            reviewButton.setText("EDIT REVIEW");
+
+        }else
+            getListInfo(mLocation.getLocId());
     }
 
     private void getListInfo(long locId)  {
@@ -201,7 +223,9 @@ public class ParkDetails extends AppCompatActivity {
 
 
 
-    private Address AddressFinder(LatLng latLong){
+
+
+/*    private Address AddressFinder(LatLng latLong){
         Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -210,5 +234,5 @@ public class ParkDetails extends AppCompatActivity {
         catch (IOException exception){
         }
         return addresses.get(0);
-    }
+    }*/
 }
