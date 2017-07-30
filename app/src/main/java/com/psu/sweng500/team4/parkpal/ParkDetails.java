@@ -132,7 +132,7 @@ public class ParkDetails extends AppCompatActivity {
         }
 
         //sets address from the Lat/Lng from geocoder conversion
-        if (addr.getAddressLine(0) == " ") {
+        if (addr.getAddressLine(0) == null) {
             tvAddress.setText("Address N/A");
         }else{
             tvAddress.setText(addr.getAddressLine(0));
@@ -202,7 +202,7 @@ public class ParkDetails extends AppCompatActivity {
 
 
     private Address AddressFinder(LatLng latLong){
-        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         List<Address> addresses = null;
         try {
             addresses = geocoder.getFromLocation(latLong.latitude, latLong.longitude, 1);
