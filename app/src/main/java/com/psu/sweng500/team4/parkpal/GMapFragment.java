@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.table.query.QueryOrder;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
@@ -280,25 +281,37 @@ public class GMapFragment extends Fragment implements
                         AzureServiceAdapter.getInstance().getClient().getTable("LOCATIONS", Location.class);
 
 
-                    //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
-                    //iterable like a regular list
-                    final MobileServiceList<Location> results = table.where().execute().get();
+                    boolean more = true;
+                    int totalrows = 0;
+                    int skipnumber = 0;
+                    int rows=0;
+                    while(more) {
+                        //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
+                        //iterable like a regular list
+                        final MobileServiceList<Location> results  = table.orderBy("LOC_ID", QueryOrder.Ascending).skip(skipnumber).execute().get();
+                        int count = results.size();
+                        skipnumber += 50;
+                        rows += count;
+                        mLocations.addAll(results);
 
-                    mLocations.addAll(results);
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // If we're just starting up we are waiting on getting locations so
-                            // set locations and after create the markers
-                            createLocationMarkers();
+                        if (rows < skipnumber) {
+                            more = false;
                         }
-                    });
 
-                    for (int i = 0; i < 10; i++) {
-                        Log.d("INFO", "Result : " + results.get(i).getName() +
-                                " | " + results.get(i).getLatitude() +
-                                " , " + results.get(i).getLongitude());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // If we're just starting up we are waiting on getting locations so
+                                // set locations and after create the markers
+                                createLocationMarkers();
+                            }
+                        });
+
+                        for (int i = 0; i < 10; i++) {
+                            Log.d("INFO", "Result : " + results.get(i).getName() +
+                                    " | " + results.get(i).getLatitude() +
+                                    " , " + results.get(i).getLongitude());
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
