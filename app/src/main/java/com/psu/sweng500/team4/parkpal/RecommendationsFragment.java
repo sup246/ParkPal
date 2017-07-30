@@ -37,6 +37,8 @@ public class RecommendationsFragment extends Fragment {
     private User mCurrentUser;
     private View mView;
     private FragmentActivity fragmentActivity;
+    private String ip = "192.168.1.192";
+    private String recURL = "http://" + ip + ":8080/recommendations/user/";
 
     public RecommendationsFragment() {
         // Required empty public constructor
@@ -62,7 +64,7 @@ public class RecommendationsFragment extends Fragment {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                final String url = "http://192.168.1.192:8080/recommendations/user/" + mCurrentUser.getId();
+                final String url = recURL + mCurrentUser.getId();
                 int timeoutSec = 10;
 
                 HttpComponentsClientHttpRequestFactory rf = new HttpComponentsClientHttpRequestFactory();
