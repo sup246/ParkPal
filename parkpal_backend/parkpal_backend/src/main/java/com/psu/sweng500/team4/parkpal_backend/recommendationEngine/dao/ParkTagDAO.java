@@ -40,7 +40,7 @@ public class ParkTagDAO extends ParkDAO implements ItemTagDAO {
         Iterator it = tags.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
             tagCache.put((Integer)pair.getKey(),(List<String>)pair.getValue());
 
             for (String tag : (List<String>)pair.getValue()) {

@@ -12,8 +12,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,14 +27,18 @@ import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +49,12 @@ public class ParkDetails extends AppCompatActivity {
     private LayoutInflater layoutInflator;
     private RelativeLayout layout;
     private PopupWindow popupWindow;
+    private ListView alertListV;
+
+    private ArrayList<ParkAlert> parkAlerts;
+
+    ArrayList<String> alertListItems;
+    ArrayAdapter<String> alertAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +118,7 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
+
         //TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
 
         //get marker current location
@@ -132,12 +145,26 @@ public class ParkDetails extends AppCompatActivity {
         }
 
         //sets address from the Lat/Lng from geocoder conversion
+<<<<<<< HEAD
         if (addr.getAddressLine(0) == null) {
+=======
+        if (addr == null || addr.getAddressLine(0) == " ") {
+>>>>>>> 6a3a8505024743c5d5ae59ab0a02d5fb1bfc8df3
             tvAddress.setText("Address N/A");
         }else{
             tvAddress.setText(addr.getAddressLine(0));
         }
 
+
+        alertListV = (ListView) this.findViewById(R.id.parkAlerts);
+
+        alertListItems = new ArrayList<String>();
+        alertAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                alertListItems);
+        alertListV.setAdapter(alertAdapter);
+
+        getAlerts(mLocation.getLocId());
     }
 
     @Override
@@ -146,7 +173,45 @@ public class ParkDetails extends AppCompatActivity {
         getListInfo(mLocation.getLocId());
     }
 
+    private void addAlertToList(String alert){
+
+        alertListItems.add(alert);
+        alertAdapter.notifyDataSetChanged();
+
+    }
+
+    private void getAlerts(long locId){
+
+        ParkAlertsQueryTask asyncQuery = new ParkAlertsQueryTask(new AsyncResponse(){
+            @Override
+            public void processFinish(Object result){
+                if (result == null) {
+                    parkAlerts = new ArrayList<ParkAlert>();
+                }
+                else {
+                    parkAlerts = (ArrayList<ParkAlert>)result;
+                }
+
+                Collections.sort(parkAlerts, new Comparator<ParkAlert>(){
+                    public int compare(ParkAlert obj1, ParkAlert obj2) {
+                        // ## Descending order
+                        return obj2.getDate().compareTo(obj1.getDate());
+                    }
+                });
+
+                for(ParkAlert alert : parkAlerts){
+                    if (alert.getAlertMessage() != null && !alert.getAlertMessage().isEmpty()) {
+                        addAlertToList(alert.getDate() + ": " + alert.getAlertMessage());
+                    }
+                }
+            }
+        }, locId);
+
+        asyncQuery.execute();
+    }
+
     private void getListInfo(long locId)  {
+
 
      /*   try {
             //Initialization of the AzureServiceAdapter to make it usable in the app.
@@ -202,6 +267,7 @@ public class ParkDetails extends AppCompatActivity {
 
 
     private Address AddressFinder(LatLng latLong){
+<<<<<<< HEAD
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -210,5 +276,17 @@ public class ParkDetails extends AppCompatActivity {
         catch (IOException exception){
         }
         return addresses.get(0);
+=======
+//        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
+//        List<Address> addresses = null;
+//        try {
+//            addresses = geocoder.getFromLocation(latLong.latitude, latLong.longitude, 1);
+//        }
+//        catch (IOException exception){
+//            Log.e("ParkPal", "exception", exception);
+//        }
+//        return addresses.get(0);
+        return null;
+>>>>>>> 6a3a8505024743c5d5ae59ab0a02d5fb1bfc8df3
     }
 }

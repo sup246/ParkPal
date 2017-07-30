@@ -21,6 +21,7 @@ import android.util.Log;
 public class NotificationService extends NotificationsHandler {
 
     public static final int NOTIFICATION_ID = 1;
+    private static final String recommendations = "ParkPal just sent you new recommendations";
 
     @Override
     public void onRegistered(Context context,  final String gcmRegistrationId) {
@@ -41,13 +42,24 @@ public class NotificationService extends NotificationsHandler {
     }
     @Override
     public void onReceive(Context context, Bundle bundle) {
-        String msg = bundle.getString("message");
+        String msg;
+
+        Intent intent = new Intent(context, MainActivity.class);
+
+        if (bundle.getString("message").equals("recommendations")){
+            msg = recommendations;
+            intent.putExtra("fragment", "recommendations");
+        }
+        else{
+            msg = bundle.getString("message");
+        }
+
         Log.d("NOTIFICATION", msg);
 
         PendingIntent contentIntent = PendingIntent.getActivity(context,
                 0, // requestCode
-                new Intent(context, MainActivity.class),
-                0); // flags
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT); // flags
 
         Notification notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.camp_icon)

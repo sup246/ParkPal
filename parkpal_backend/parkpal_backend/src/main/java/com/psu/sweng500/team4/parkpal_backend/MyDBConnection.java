@@ -42,7 +42,7 @@ public class MyDBConnection {
             ResultSet rs = stmt.executeQuery(SQL);
 
             while (rs.next()) {
-                System.out.print(rs.getString(1) + ": " + rs.getString(2) + "\n");
+                //System.out.println(rs.getString(1) + ": " + rs.getString(2));
                 result.put(rs.getInt(1), rs.getString(2));
             }
         }catch(Exception e){
@@ -66,7 +66,7 @@ public class MyDBConnection {
                 String loc_type = rs.getString(3);
                 ArrayList<String> tags = new ArrayList<String>();
 
-                System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
+                //System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
 
                 // Add amenities to list
                 for (String tag : amenities.split(" ")){
@@ -103,7 +103,7 @@ public class MyDBConnection {
                 String loc_type = rs.getString(3);
                 ArrayList<String> tags = new ArrayList<String>();
 
-                System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
+                //System.out.print(loc_id + ": " + amenities + ": " + loc_type + "\n");
 
                 // Add amenities to list
                 for (String tag : amenities.split(" ")){
