@@ -1,7 +1,5 @@
 package com.psu.sweng500.team4.parkpal.Models;
 
-import java.util.Date;
-
 /**
  * Created by brhoads on 7/30/2017.
  */
@@ -15,7 +13,7 @@ public class ParkRating {
     @com.google.gson.annotations.SerializedName("rating")
     private int rating;
     @com.google.gson.annotations.SerializedName("user_id")
-    private Date user_id;
+    private int user_id;
 
     private String id;
 
@@ -30,10 +28,11 @@ public class ParkRating {
     public ParkRating() {
     }
 
-    public ParkRating(long parkId, String username, int rating) {
+    public ParkRating(long parkId, String username, int user_id, int rating) {
         this.park_id = parkId;
         this.username = username;
         this.rating = rating;
+        this.user_id = user_id;
     }
 
     public long getPark_id() {
@@ -60,11 +59,11 @@ public class ParkRating {
         this.rating = rating;
     }
 
-    public Date getUser_id() {
+    public int getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(Date user_id) {
+    public void setUser_id(int user_id) {
         this.user_id = user_id;
     }
 }
