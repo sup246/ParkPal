@@ -1,6 +1,7 @@
 package com.psu.sweng500.team4.parkpal;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.ParkMyRatingQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNoteRatingQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
@@ -33,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import static android.app.PendingIntent.getActivity;
 
@@ -41,6 +42,7 @@ public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
     private ListView alertListV;
+    private Button reviewButton;
 
     private ArrayList<ParkNote> parkNotes;
     private ArrayList<ParkRating> parkRatings;
@@ -49,18 +51,15 @@ public class ParkDetails extends AppCompatActivity {
     ArrayList<String> alertListItems;
     ArrayAdapter<String> alertAdapter;
 
-    Semaphore semaphore;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_details);
 
-        semaphore = new Semaphore(-2);
-
         mLocation = (Location) getIntent().getSerializableExtra("Location");
-        getListInfo(mLocation.getLocId());
         mCurrentUser = (User) getIntent().getSerializableExtra("User");
+
+        getListInfo(mLocation.getLocId());
 
         Button mAddNoteButton = (Button) findViewById(R.id.addNote);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +91,7 @@ public class ParkDetails extends AppCompatActivity {
                 Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
                 intent.putExtra("Location", mLocation);
                 intent.putExtra("User", mCurrentUser);
-                startActivityForResult(intent, 666);
+                startActivityForResult(intent, 999);
 
             }
         });
@@ -104,6 +103,7 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
+        reviewButton = (Button) this.findViewById(R.id.addReview);
 
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -168,7 +168,8 @@ public class ParkDetails extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Refresh the expanded list after one has been inserted
+        // Refresh things after making an update
+        getAlerts(mLocation.getLocId());
         getListInfo(mLocation.getLocId());
     }
 
@@ -223,39 +224,81 @@ public class ParkDetails extends AppCompatActivity {
                     parkNotes = (ArrayList<ParkNote>) map.get("notes");
                 }
 
-                final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
-                ExpandableListAdapter expandableListAdapter;
-                final List<String> expandableListTitle = new ArrayList<String>();
-                final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
-
-                Object reviews = parkRatings;
-                Object notes = parkNotes;
-                expandableListDetail.put("Reviews", (List<Object>) reviews);
-                expandableListDetail.put("Comments", (List<Object>) notes);
-
-                expandableListTitle.addAll(expandableListDetail.keySet());
-
-                expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
-                expandableListView.setAdapter(expandableListAdapter);
-                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                    @Override
-                    public void onGroupExpand(int groupPosition) { }
-                });
-
-                expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-                    @Override
-                    public void onGroupCollapse(int groupPosition) { }
-                });
-
-                expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                    @Override
-                    public boolean onChildClick(ExpandableListView parent, View v,
-                                                int groupPosition, int childPosition, long id) { return false; }
-                });
+                initExpandableList();
+                initRatingStars();
             }
         }, locId);
 
         getParkNotesReviews.execute();
+
+        ParkMyRatingQueryTask haveIRated = new ParkMyRatingQueryTask(new AsyncResponse(){
+
+            @Override
+            public void processFinish(Object result) {
+                if ((boolean) result == true) {
+                    Drawable img = getResources().getDrawable(android.R.drawable.ic_menu_edit);
+                    reviewButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+                }
+            }
+        }, locId, mCurrentUser.getUsername());
+
+        haveIRated.execute();
+    }
+
+    private void initRatingStars() {
+        int ratingsCount = parkRatings.size();
+        int ratingsTotal = 0;
+
+        for (ParkRating rating : parkRatings) {
+            ratingsTotal += rating.getRating();
+        }
+
+        RatingBar ratingBar = (RatingBar) this.findViewById(R.id.ratingBar);
+        if (ratingBar != null) {
+            if (ratingsCount > 0) {
+                ratingBar.setRating(ratingsTotal / ratingsCount);
+            }
+            else {
+                ratingBar.setRating(0);
+            }
+        }
+
+        TextView tvRatNum = (TextView) this.findViewById(R.id.tvRatNum);
+        if (tvRatNum != null) {
+            tvRatNum.setText("(" + ratingsCount + ")");
+        }
+    }
+
+    private void initExpandableList() {
+        final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
+        ExpandableListAdapter expandableListAdapter;
+        final List<String> expandableListTitle = new ArrayList<String>();
+        final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
+
+        Object reviews = parkRatings;
+        Object notes = parkNotes;
+        expandableListDetail.put("Reviews", (List<Object>) reviews);
+        expandableListDetail.put("Comments", (List<Object>) notes);
+
+        expandableListTitle.addAll(expandableListDetail.keySet());
+
+        expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
+        expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) { }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) { }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) { return false; }
+        });
     }
 
     private Address AddressFinder(LatLng latLong){

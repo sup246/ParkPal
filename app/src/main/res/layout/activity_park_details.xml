@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.psu.sweng500.team4.parkpal.ParkDetails">
 
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -13,39 +14,37 @@
         android:adjustViewBounds="false"
         android:cropToPadding="true"
         android:fitsSystemWindows="false"
-        android:padding="0dp"
-        android:paddingBottom="0dp"
-        android:paddingEnd="0dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="0dp"
-        android:paddingStart="0dp"
-        android:paddingTop="0dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:scaleType="centerCrop"
         app:srcCompat="@drawable/campphoto1" />
 
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="75dp"
+        android:layout_alignParentTop="true"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:text="TEST"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="118dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:scrollIndicators="right"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical">
+        android:padding="10dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvPhone"
@@ -215,15 +214,6 @@
             </LinearLayout>
         </LinearLayout>
 
-
-        <ExpandableListView
-            android:id="@+id/parkNotes"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:groupIndicator="@drawable/group_indicator"
-            android:indicatorRight="25dp"
-            android:transcriptMode="alwaysScroll" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -248,8 +238,17 @@
                 android:indicatorRight="25dp"
                 android:transcriptMode="alwaysScroll"
                 android:visibility="visible" />
-
         </LinearLayout>
+
+        <ExpandableListView
+            android:id="@+id/parkNotes"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:groupIndicator="@drawable/group_indicator"
+            android:indicatorRight="25dp" />
     </LinearLayout>
+
+
+    </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
