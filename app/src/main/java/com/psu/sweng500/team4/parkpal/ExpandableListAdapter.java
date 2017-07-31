@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
+import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -114,6 +116,30 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             TextView expandedListTextView_date = (TextView) convertView
                     .findViewById(R.id.note_date);
             expandedListTextView_date.setText(dateString);
+        }
+        // If it's a Park note
+        if (expandedListItem.getClass().equals(ParkRating.class)) {
+            ParkRating parkRating = (ParkRating) expandedListItem;
+
+            if (convertView == null) {
+                LayoutInflater layoutInflater = (LayoutInflater) this.context
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = layoutInflater.inflate(R.layout.park_review_layout, null);
+            }
+
+            // Set username
+            TextView expandedListTextView_username = (TextView) convertView
+                    .findViewById(R.id.ratingUsername);
+            expandedListTextView_username.setText(parkRating.getUsername());
+
+            // Set rating
+            RatingBar userRating = (RatingBar) convertView.findViewById(R.id.reviewRatingBar);
+            userRating.setRating(parkRating.getRating());
+
+            // Set comment
+            TextView userComment = (TextView) convertView.findViewById(R.id.reviewComment);
+            //userComment.setText(parkRating.getComment());
+            userComment.setText("TestComment");
         }
 
         // else if it's an Alert??

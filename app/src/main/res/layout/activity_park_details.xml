@@ -173,7 +173,7 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/tvProfileName"
+                    android:id="@+id/ratingUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@mipmap/ic_profile"
@@ -182,7 +182,7 @@
                     android:textSize="15sp" />
 
                 <RatingBar
-                    android:id="@+id/userRatingBar"
+                    android:id="@+id/reviewRatingBar"
                     style="@style/Widget.AppCompat.RatingBar.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -198,10 +198,10 @@
                     android:stepSize=".5" />
 
                 <TextView
-                    android:id="@+id/tvRatingComment"
+                    android:id="@+id/reviewComment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/userRatingBar"
+                    android:layout_below="@id/reviewRatingBar"
                     android:layout_marginLeft="48dp"
                     android:paddingTop="15dp"
                     android:text="This is a great place!"
