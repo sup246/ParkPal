@@ -6,6 +6,7 @@ package com.psu.sweng500.team4.parkpal.Services;
 
 import com.microsoft.windowsazure.notifications.NotificationsHandler;
 import com.psu.sweng500.team4.parkpal.MainActivity;
+import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.R;
 
 import android.app.Notification;
@@ -22,6 +23,11 @@ public class NotificationService extends NotificationsHandler {
 
     public static final int NOTIFICATION_ID = 1;
     private static final String recommendations = "ParkPal just sent you new recommendations";
+    private static User currentUser;
+
+    public static void setCurrentUser(User currentUser) {
+        NotificationService.currentUser = currentUser;
+    }
 
     @Override
     public void onRegistered(Context context,  final String gcmRegistrationId) {
@@ -47,7 +53,7 @@ public class NotificationService extends NotificationsHandler {
         Intent intent = new Intent(context, MainActivity.class);
 
         if (bundle.getString("message").equals("recommendations")){
-            msg = recommendations;
+            msg = currentUser.getUsername() + ", " + recommendations;
             intent.putExtra("fragment", "recommendations");
         }
         else{
