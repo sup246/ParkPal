@@ -1,61 +1,37 @@
 package com.psu.sweng500.team4.parkpal;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.location.Address;
-import android.location.Geocoder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.microsoft.windowsazure.mobileservices.MobileServiceList;
-import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
-import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
 import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
-import com.psu.sweng500.team4.parkpal.Queries.LocationQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
-import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Queries.ParkRatingQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static android.app.PendingIntent.getActivity;
 
@@ -149,7 +125,9 @@ public class ParkDetails extends AppCompatActivity {
 
                 iv.setImageDrawable(weatherService.getWeatherIcon());
 
-                tvCurrentTemp.setText(weather.getPrettyTempstring());
+                if (weather != null) {
+                    tvCurrentTemp.setText(weather.getPrettyTempstring());
+                }
             }
         });
 
@@ -195,14 +173,14 @@ public class ParkDetails extends AppCompatActivity {
             String comment = data.getStringExtra("Comment");
             float stars = data.getFloatExtra("Stars", 0);
 
-            TextView userName = (TextView)findViewById(R.id.tvProfileName);
+            TextView userName = (TextView)findViewById(R.id.ratingUsername);
             MainActivity ma = new MainActivity();
             userName.setText(mCurrentUser.getUsername());
 
-            RatingBar userRating = (RatingBar)findViewById(R.id.userRatingBar);
+            RatingBar userRating = (RatingBar)findViewById(R.id.reviewRatingBar);
             userRating.setRating(stars);
 
-            TextView userComment = (TextView)findViewById(R.id.tvRatingComment);
+            TextView userComment = (TextView)findViewById(R.id.reviewComment);
             userComment.setText(comment.toString());
 
             Button reviewButton = (Button)findViewById(R.id.addReview);
@@ -250,19 +228,13 @@ public class ParkDetails extends AppCompatActivity {
     }
 
     private void getListInfo(long locId)  {
+        getParkNotes(locId);
+        getParkReviews(locId);
+    }
 
-
-     /*   try {
-            //Initialization of the AzureServiceAdapter to make it usable in the app.
-            AzureServiceAdapter.Initialize(getBaseContext());
-            Log.d("INFO", "AzureServiceAdapter initialized");
-
-        } catch (Exception e) {
-            Log.e("ParkPal", "exception", e);
-        }
-*/
+    private void getParkNotes(long locId) {
         // Get park notes
-        ParkNotesQueryTask asyncQuery = new ParkNotesQueryTask(new AsyncResponse(){
+        ParkNotesQueryTask getParkNotes = new ParkNotesQueryTask(new AsyncResponse(){
 
             @Override
             public void processFinish(Object result){
@@ -276,7 +248,7 @@ public class ParkDetails extends AppCompatActivity {
                     result = new ArrayList<ParkNote>();
                 }
 
-                expandableListDetail.put("Park Notes", (List<Object>) result);
+                expandableListDetail.put("Comments", (List<Object>) result);
 
                 expandableListTitle.addAll(expandableListDetail.keySet());
 
@@ -300,9 +272,51 @@ public class ParkDetails extends AppCompatActivity {
             }
         }, locId);
 
-        asyncQuery.execute();
+        getParkNotes.execute();
     }
 
+    private void getParkReviews(long locId) {
+        // Get park reviews
+        ParkRatingQueryTask getParkReviews = new ParkRatingQueryTask(new AsyncResponse(){
+
+            @Override
+            public void processFinish(Object result){
+                final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
+                ExpandableListAdapter expandableListAdapter;
+                final List<String> expandableListTitle = new ArrayList<String>();
+                final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
+
+                // If no results just show an empty list
+                if (result == null){
+                    result = new ArrayList<ParkNote>();
+                }
+
+                expandableListDetail.put("Reviews", (List<Object>) result);
+
+                expandableListTitle.addAll(expandableListDetail.keySet());
+
+                expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
+                expandableListView.setAdapter(expandableListAdapter);
+                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+                    @Override
+                    public void onGroupExpand(int groupPosition) { }
+                });
+
+                expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+                    @Override
+                    public void onGroupCollapse(int groupPosition) { }
+                });
+
+                expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                    @Override
+                    public boolean onChildClick(ExpandableListView parent, View v,
+                                                int groupPosition, int childPosition, long id) { return false; }
+                });
+            }
+        }, locId);
+
+        getParkReviews.execute();
+    }
 
     private Address AddressFinder(LatLng latLong){
 //        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
