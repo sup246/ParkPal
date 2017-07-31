@@ -17,7 +17,7 @@
             android:id="@+id/ratingUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@mipmap/ic_profile"
+            android:drawableLeft="@drawable/ic_account_box_black_50dp"
             android:drawablePadding="5dp"
             android:text="Stefanie"
             android:textSize="15sp" />

@@ -118,7 +118,7 @@
             android:paddingBottom="0dp"
             android:paddingTop="0dp"
             android:scaleType="fitCenter"
-            app:srcCompat="@mipmap/ic_addphoto" />
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
 
         <LinearLayout
