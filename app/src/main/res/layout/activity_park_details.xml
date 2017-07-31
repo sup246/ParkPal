@@ -6,6 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.psu.sweng500.team4.parkpal.ParkDetails">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="118dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="true"
+        android:fitsSystemWindows="false"
+        android:padding="0dp"
+        android:paddingBottom="0dp"
+        android:paddingEnd="0dp"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:paddingStart="0dp"
+        android:paddingTop="0dp"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/campphoto1" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,12 +36,14 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -34,6 +53,7 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/phone_icon"
                 android:drawablePadding="5dp"
+                android:layout_marginTop="10dp"
                 android:textSize="18sp" />
 
             <TextView
