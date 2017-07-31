@@ -43,6 +43,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int groupPosition) {
+        return this.expandableListDetail.get(this.expandableListTitle.get(groupPosition));
+    }
+
+    public String getGroupName(int groupPosition) {
         return this.expandableListTitle.get(groupPosition);
     }
 
@@ -69,7 +73,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String listTitle = (String) getGroup(groupPosition);
+        String listTitle = getGroupName(groupPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -89,57 +93,65 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         final Object expandedListItem = getChild(groupPosition, childPosition);
+        Class itemClass = expandedListItem.getClass();
 
         // If it's a Park note
-        if (expandedListItem.getClass().equals(ParkNote.class)) {
+        if (itemClass.equals(ParkNote.class)) {
             ParkNote parkNote = (ParkNote) expandedListItem;
 
-            if (convertView == null) {
-                LayoutInflater layoutInflater = (LayoutInflater) this.context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = layoutInflater.inflate(R.layout.park_notes_layout, null);
-            }
+            LayoutInflater layoutInflater = (LayoutInflater) this.context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.park_notes_layout, null);
 
             // Set username
             TextView expandedListTextView_username = (TextView) convertView
                     .findViewById(R.id.note_username);
-            expandedListTextView_username.setText(parkNote.getUsername());
+            if (expandedListTextView_username != null) {
+                expandedListTextView_username.setText(parkNote.getUsername());
+            }
 
             // Set note
             TextView expandedListTextView_note = (TextView) convertView
                     .findViewById(R.id.note);
-            expandedListTextView_note.setText(parkNote.getNote_message());
+            if (expandedListTextView_note != null) {
+                expandedListTextView_note.setText(parkNote.getNote_message());
+            }
 
             // Set date
             SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy h:mm a");
             String dateString = sdf.format(parkNote.getDate());
             TextView expandedListTextView_date = (TextView) convertView
                     .findViewById(R.id.note_date);
-            expandedListTextView_date.setText(dateString);
-        }
-        // If it's a Park note
-        if (expandedListItem.getClass().equals(ParkRating.class)) {
+            if (expandedListTextView_date != null) {
+                expandedListTextView_date.setText(dateString);
+            }
+
+        } else if (itemClass.equals(ParkRating.class)) {
             ParkRating parkRating = (ParkRating) expandedListItem;
 
-            if (convertView == null) {
-                LayoutInflater layoutInflater = (LayoutInflater) this.context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = layoutInflater.inflate(R.layout.park_review_layout, null);
-            }
+            LayoutInflater layoutInflater = (LayoutInflater) this.context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.park_review_layout, null);
 
             // Set username
             TextView expandedListTextView_username = (TextView) convertView
                     .findViewById(R.id.ratingUsername);
-            expandedListTextView_username.setText(parkRating.getUsername());
+            if (expandedListTextView_username != null) {
+                expandedListTextView_username.setText(parkRating.getUsername());
+            }
 
             // Set rating
             RatingBar userRating = (RatingBar) convertView.findViewById(R.id.reviewRatingBar);
-            userRating.setRating(parkRating.getRating());
+            if (userRating != null) {
+                userRating.setRating(parkRating.getRating());
+            }
 
             // Set comment
             TextView userComment = (TextView) convertView.findViewById(R.id.reviewComment);
             //userComment.setText(parkRating.getComment());
-            userComment.setText("TestComment");
+            if (userComment != null) {
+                userComment.setText("TestComment");
+            }
         }
 
         // else if it's an Alert??

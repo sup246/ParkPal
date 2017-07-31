@@ -16,15 +16,16 @@ import android.widget.TextView;
 import android.widget.Button;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
+import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.ParkRatingQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.ParkNoteRatingQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.util.ArrayList;
@@ -32,25 +33,30 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import static android.app.PendingIntent.getActivity;
 
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
-    private LayoutInflater layoutInflator;
-    private RelativeLayout layout;
     private ListView alertListV;
 
+    private ArrayList<ParkNote> parkNotes;
+    private ArrayList<ParkRating> parkRatings;
     private ArrayList<ParkAlert> parkAlerts;
 
     ArrayList<String> alertListItems;
     ArrayAdapter<String> alertAdapter;
 
+    Semaphore semaphore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_park_details);
+
+        semaphore = new Semaphore(-2);
 
         mLocation = (Location) getIntent().getSerializableExtra("Location");
         getListInfo(mLocation.getLocId());
@@ -79,7 +85,6 @@ public class ParkDetails extends AppCompatActivity {
         });
 
         Button mAddReview = (Button) findViewById(R.id.addReview);
-        layout = (RelativeLayout)findViewById(R.id.rLayout);
 
         mAddReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,31 +168,8 @@ public class ParkDetails extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Refresh the park notes after one has been inserted
-
-        if (requestCode == 666)
-        {
-            RelativeLayout layout = (RelativeLayout)findViewById(R.id.ratingId);
-            layout.setVisibility(View.VISIBLE);
-
-            String comment = data.getStringExtra("Comment");
-            float stars = data.getFloatExtra("Stars", 0);
-
-            TextView userName = (TextView)findViewById(R.id.ratingUsername);
-            MainActivity ma = new MainActivity();
-            userName.setText(mCurrentUser.getUsername());
-
-            RatingBar userRating = (RatingBar)findViewById(R.id.reviewRatingBar);
-            userRating.setRating(stars);
-
-            TextView userComment = (TextView)findViewById(R.id.reviewComment);
-            userComment.setText(comment.toString());
-
-            Button reviewButton = (Button)findViewById(R.id.addReview);
-            reviewButton.setText("EDIT REVIEW");
-
-        }else
-            getListInfo(mLocation.getLocId());
+        // Refresh the expanded list after one has been inserted
+        getListInfo(mLocation.getLocId());
     }
 
     private void addAlertToList(String alert){
@@ -228,27 +210,28 @@ public class ParkDetails extends AppCompatActivity {
     }
 
     private void getListInfo(long locId)  {
-        getParkNotes(locId);
-        getParkReviews(locId);
-    }
-
-    private void getParkNotes(long locId) {
-        // Get park notes
-        ParkNotesQueryTask getParkNotes = new ParkNotesQueryTask(new AsyncResponse(){
+        ParkNoteRatingQueryTask getParkNotesReviews = new ParkNoteRatingQueryTask(new AsyncResponse(){
 
             @Override
             public void processFinish(Object result){
+                if (result == null){
+                    parkRatings = new ArrayList<ParkRating>();
+                }
+                else {
+                    HashMap map = (HashMap<String, MobileServiceList>) result;
+                    parkRatings = (ArrayList<ParkRating>) map.get("ratings");
+                    parkNotes = (ArrayList<ParkNote>) map.get("notes");
+                }
+
                 final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
                 ExpandableListAdapter expandableListAdapter;
                 final List<String> expandableListTitle = new ArrayList<String>();
                 final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
 
-                // If no results just show an empty list
-                if (result == null){
-                    result = new ArrayList<ParkNote>();
-                }
-
-                expandableListDetail.put("Comments", (List<Object>) result);
+                Object reviews = parkRatings;
+                Object notes = parkNotes;
+                expandableListDetail.put("Reviews", (List<Object>) reviews);
+                expandableListDetail.put("Comments", (List<Object>) notes);
 
                 expandableListTitle.addAll(expandableListDetail.keySet());
 
@@ -272,50 +255,7 @@ public class ParkDetails extends AppCompatActivity {
             }
         }, locId);
 
-        getParkNotes.execute();
-    }
-
-    private void getParkReviews(long locId) {
-        // Get park reviews
-        ParkRatingQueryTask getParkReviews = new ParkRatingQueryTask(new AsyncResponse(){
-
-            @Override
-            public void processFinish(Object result){
-                final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
-                ExpandableListAdapter expandableListAdapter;
-                final List<String> expandableListTitle = new ArrayList<String>();
-                final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
-
-                // If no results just show an empty list
-                if (result == null){
-                    result = new ArrayList<ParkNote>();
-                }
-
-                expandableListDetail.put("Reviews", (List<Object>) result);
-
-                expandableListTitle.addAll(expandableListDetail.keySet());
-
-                expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
-                expandableListView.setAdapter(expandableListAdapter);
-                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                    @Override
-                    public void onGroupExpand(int groupPosition) { }
-                });
-
-                expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-                    @Override
-                    public void onGroupCollapse(int groupPosition) { }
-                });
-
-                expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                    @Override
-                    public boolean onChildClick(ExpandableListView parent, View v,
-                                                int groupPosition, int childPosition, long id) { return false; }
-                });
-            }
-        }, locId);
-
-        getParkReviews.execute();
+        getParkNotesReviews.execute();
     }
 
     private Address AddressFinder(LatLng latLong){

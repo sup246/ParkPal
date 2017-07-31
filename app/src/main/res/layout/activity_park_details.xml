@@ -88,19 +88,33 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvRating"
-            android:layout_width="74dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Rating"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="20dp"
+            android:maxWidth="20dp"
+            android:padding="0dp"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@mipmap/ic_addphoto" />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="74dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Rating"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -130,78 +144,55 @@
             android:orientation="vertical"
             android:weightSum="1">
 
-            <RelativeLayout
-                android:id="@+id/rLayout"
-                android:layout_width="174dp"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/addReview"
-                    android:layout_width="172dp"
-                    android:layout_height="38dp"
-                    android:text="Write a Review"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/ratingId"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/grey"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:layout_height="50dp"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/ratingUsername"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@mipmap/ic_profile"
-                    android:drawablePadding="5dp"
-                    android:text="Stefanie"
-                    android:textSize="15sp" />
+                <RelativeLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.3">
 
-                <RatingBar
-                    android:id="@+id/reviewRatingBar"
-                    style="@style/Widget.AppCompat.RatingBar.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="48dp"
-                    android:layout_marginStart="48dp"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:rating="4"
-                    android:stepSize=".5" />
+                    <Button
+                        android:id="@+id/addReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Review"
+                        android:textSize="12sp" />
+                </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/reviewComment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/reviewRatingBar"
-                    android:layout_marginLeft="48dp"
-                    android:paddingTop="15dp"
-                    android:text="This is a great place!"
-                    android:textSize="12sp" />
-            </RelativeLayout>
+                <RelativeLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.3">
 
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:maxHeight="20dp"
-                android:maxWidth="20dp"
-                android:padding="0dp"
-                android:paddingBottom="0dp"
-                android:paddingTop="0dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@mipmap/ic_addphoto" />
+                    <Button
+                        android:id="@+id/addNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Comment"
+                        android:textSize="12sp"
+                        />
 
+                </RelativeLayout>
 
+                <RelativeLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.3">
+
+                    <Button
+                        android:id="@+id/addAlert"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Alert"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
 
@@ -212,42 +203,6 @@
             android:groupIndicator="@drawable/group_indicator"
             android:indicatorRight="25dp"
             android:transcriptMode="alwaysScroll" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <RelativeLayout
-                android:layout_width="0dip"
-                android:layout_height="50dp"
-                android:layout_weight="0.5">
-
-                <Button
-                    android:id="@+id/addNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:drawableLeft="@android:drawable/ic_input_add"
-                    android:text="Comment"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="0dip"
-                android:layout_height="50dp"
-                android:layout_weight="0.5">
-
-                <Button
-                    android:id="@+id/addAlert"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:drawableLeft="@android:drawable/ic_input_add"
-                    android:text="Alert"
-                    android:textSize="18sp" />
-            </RelativeLayout>
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

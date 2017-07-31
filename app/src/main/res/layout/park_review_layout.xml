@@ -13,19 +13,20 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
+        <TextView
+            android:id="@+id/ratingUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@mipmap/ic_profile"
+            android:drawablePadding="5dp"
+            android:text="Stefanie"
+            android:textSize="15sp" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/ratingUsername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@mipmap/ic_profile"
-                android:drawablePadding="5dp"
-                android:text="Stefanie"
-                android:textSize="15sp" />
+            android:orientation="vertical"
+            android:paddingLeft="10dp">
 
             <RatingBar
                 android:id="@+id/reviewRatingBar"
@@ -36,22 +37,19 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="left"
-                android:layout_marginLeft="48dp"
-                android:layout_marginStart="48dp"
                 android:isIndicator="true"
                 android:numStars="5"
                 android:rating="4"
                 android:stepSize=".5" />
-        </LinearLayout>
 
-        <TextView
-            android:id="@+id/reviewComment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/reviewRatingBar"
-            android:layout_marginLeft="48dp"
-            android:paddingTop="15dp"
-            android:text="This is a great place!"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/reviewComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/reviewRatingBar"
+                android:paddingTop="5dp"
+                android:text="This is a great place!"
+                android:textSize="12sp" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
