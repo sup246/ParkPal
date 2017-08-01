@@ -182,6 +182,9 @@ public class ParkDetails extends AppCompatActivity {
 
     private void getAlerts(long locId){
 
+        // Clear out what alerts we had in memory
+        alertListItems.clear();
+
         ParkAlertsQueryTask asyncQuery = new ParkAlertsQueryTask(new AsyncResponse(){
             @Override
             public void processFinish(Object result){

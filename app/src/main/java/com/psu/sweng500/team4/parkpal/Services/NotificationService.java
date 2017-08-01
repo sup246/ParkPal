@@ -48,12 +48,15 @@ public class NotificationService extends NotificationsHandler {
     }
     @Override
     public void onReceive(Context context, Bundle bundle) {
-        String msg;
+        String msg = new String();
 
         Intent intent = new Intent(context, MainActivity.class);
 
         if (bundle.getString("message").equals("recommendations")){
-            msg = currentUser.getUsername() + ", " + recommendations;
+            if (currentUser != null) {
+                msg = currentUser.getUsername();
+            }
+            msg += ", " + recommendations;
             intent.putExtra("fragment", "recommendations");
         }
         else{
