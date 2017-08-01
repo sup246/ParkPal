@@ -16,11 +16,11 @@ public class ParkRatingInsertTask extends DBQueryTask {
 
     private static final int SUCCESS = 200;
 
-    public ParkRatingInsertTask(AsyncResponse delegate, long parkId, String username, int userId, int rating){
+    public ParkRatingInsertTask(AsyncResponse delegate, long parkId, String username, int userId, int rating, String comment){
         super();
 
         this.delegate = delegate;
-        parkRating = new ParkRating(parkId, username, userId, rating);
+        parkRating = new ParkRating(parkId, username, userId, rating, comment);
 
     }
 
@@ -42,6 +42,7 @@ public class ParkRatingInsertTask extends DBQueryTask {
             if (ratingResults.size() > 0) { // update
                 ParkRating toUpdate = ratingResults.get(0);
                 toUpdate.setRating(parkRating.getRating());
+                toUpdate.setReview_comment(parkRating.getReview_comment());
                 table.update(toUpdate).get();
             }
             else { // insert

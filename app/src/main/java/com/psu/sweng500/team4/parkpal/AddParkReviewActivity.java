@@ -59,7 +59,8 @@ public class AddParkReviewActivity extends AppCompatActivity {
                 locId,
                 username,
                 user_id,
-                (int) rating);
+                (int) rating,
+                review);
 
         insertAlert.execute();
     }

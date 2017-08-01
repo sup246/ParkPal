@@ -14,6 +14,8 @@ public class ParkRating {
     private int rating;
     @com.google.gson.annotations.SerializedName("user_id")
     private int user_id;
+    @com.google.gson.annotations.SerializedName("comment")
+    private String review_comment;
 
     private String id;
 
@@ -28,11 +30,12 @@ public class ParkRating {
     public ParkRating() {
     }
 
-    public ParkRating(long parkId, String username, int user_id, int rating) {
+    public ParkRating(long parkId, String username, int user_id, int rating, String comment) {
         this.park_id = parkId;
         this.username = username;
         this.rating = rating;
         this.user_id = user_id;
+        this.review_comment = comment;
     }
 
     public long getPark_id() {
@@ -65,5 +68,13 @@ public class ParkRating {
 
     public void setUser_id(int user_id) {
         this.user_id = user_id;
+    }
+
+    public String getReview_comment() {
+        return review_comment;
+    }
+
+    public void setReview_comment(String review_comment) {
+        this.review_comment = review_comment;
     }
 }

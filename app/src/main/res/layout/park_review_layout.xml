@@ -48,7 +48,6 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/reviewRatingBar"
                 android:paddingTop="5dp"
-                android:text="This is a great place!"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>

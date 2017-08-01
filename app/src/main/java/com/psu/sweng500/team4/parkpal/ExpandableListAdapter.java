@@ -148,9 +148,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
             // Set comment
             TextView userComment = (TextView) convertView.findViewById(R.id.reviewComment);
-            //userComment.setText(parkRating.getComment());
             if (userComment != null) {
-                userComment.setText("TestComment");
+                String comment = parkRating.getReview_comment();
+                if (comment != null && !comment.isEmpty()) {
+                    userComment.setText(comment);
+                }
             }
         }
 
