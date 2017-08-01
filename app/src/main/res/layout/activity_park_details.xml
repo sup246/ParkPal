@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.psu.sweng500.team4.parkpal.ParkDetails">
 
+<<<<<<< HEAD
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
@@ -24,14 +25,42 @@
         app:srcCompat="@drawable/campphoto1" />
 
     <LinearLayout
+=======
+
+    <ImageView
+        android:id="@+id/imageView"
+>>>>>>> 6fd2e50f160d6fe6951885fb09b6a8570a0068af
         android:layout_width="match_parent"
+        android:layout_height="118dp"
+        android:adjustViewBounds="false"
+        android:cropToPadding="true"
+        android:fitsSystemWindows="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/campphoto1" />
+
+    <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="10dp"
-        android:scrollIndicators="right"
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:scrollbarStyle="insideOverlay"
-        android:scrollbars="vertical">
+        android:layout_marginTop="75dp"
+        android:layout_alignParentTop="true"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:text="TEST"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="118dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -40,6 +69,7 @@
             android:orientation="vertical">
 
             <TextView
+<<<<<<< HEAD
                 android:id="@+id/tvLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,6 +78,8 @@
                 android:textStyle="bold" />
 
             <TextView
+=======
+>>>>>>> 6fd2e50f160d6fe6951885fb09b6a8570a0068af
                 android:id="@+id/tvPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -108,19 +140,33 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvRating"
-            android:layout_width="74dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Rating"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="20dp"
+            android:maxWidth="20dp"
+            android:padding="0dp"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRating"
+                android:layout_width="74dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Rating"
+                android:textSize="25sp"
+                android:textStyle="bold" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -150,123 +196,55 @@
             android:orientation="vertical"
             android:weightSum="1">
 
-            <RelativeLayout
-                android:id="@+id/rLayout"
-                android:layout_width="174dp"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/addReview"
-                    android:layout_width="172dp"
-                    android:layout_height="38dp"
-                    android:text="Write a Review"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/ratingId"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/grey"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/tvProfileName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@mipmap/ic_profile"
-                    android:drawablePadding="5dp"
-                    android:text="Stefanie"
-                    android:textSize="15sp" />
-
-                <RatingBar
-                    android:id="@+id/userRatingBar"
-                    style="@style/Widget.AppCompat.RatingBar.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="48dp"
-                    android:layout_marginStart="48dp"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:rating="4"
-                    android:stepSize=".5" />
-
-                <TextView
-                    android:id="@+id/tvRatingComment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/userRatingBar"
-                    android:layout_marginLeft="48dp"
-                    android:paddingTop="15dp"
-                    android:text="This is a great place!"
-                    android:textSize="12sp" />
-            </RelativeLayout>
-
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:maxHeight="20dp"
-                android:maxWidth="20dp"
-                android:padding="0dp"
-                android:paddingBottom="0dp"
-                android:paddingTop="0dp"
-                android:scaleType="fitCenter"
-                app:srcCompat="@mipmap/ic_addphoto" />
-
-
-        </LinearLayout>
-
-
-        <ExpandableListView
-            android:id="@+id/parkNotes"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:groupIndicator="@drawable/group_indicator"
-            android:indicatorRight="25dp"
-            android:transcriptMode="alwaysScroll" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <RelativeLayout
-                android:layout_width="0dip"
                 android:layout_height="50dp"
-                android:layout_weight="0.5">
+                android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/addNote"
-                    android:layout_width="match_parent"
+                <RelativeLayout
                     android:layout_height="match_parent"
-                    android:drawableLeft="@android:drawable/ic_input_add"
-                    android:text="Comment"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="0dip"
-                android:layout_height="50dp"
-                android:layout_weight="0.5">
-
-                <Button
-                    android:id="@+id/addAlert"
                     android:layout_width="match_parent"
+                    android:layout_weight="0.3">
+
+                    <Button
+                        android:id="@+id/addReview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Review"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:layout_height="match_parent"
-                    android:drawableLeft="@android:drawable/ic_input_add"
-                    android:text="Alert"
-                    android:textSize="18sp" />
-            </RelativeLayout>
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.3">
+
+                    <Button
+                        android:id="@+id/addNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Comment"
+                        android:textSize="12sp"
+                        />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_weight="0.3">
+
+                    <Button
+                        android:id="@+id/addAlert"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawableLeft="@android:drawable/ic_input_add"
+                        android:text="Alert"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -293,10 +271,20 @@
                 android:indicatorRight="25dp"
                 android:transcriptMode="alwaysScroll"
                 android:visibility="visible" />
-
         </LinearLayout>
+
+        <ExpandableListView
+            android:id="@+id/parkNotes"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:groupIndicator="@drawable/group_indicator"
+            android:indicatorRight="25dp" />
     </LinearLayout>
 
 
+<<<<<<< HEAD
+=======
+    </ScrollView>
+>>>>>>> 6fd2e50f160d6fe6951885fb09b6a8570a0068af
 
 </android.support.design.widget.CoordinatorLayout>

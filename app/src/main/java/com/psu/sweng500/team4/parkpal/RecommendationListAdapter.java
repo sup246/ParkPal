@@ -87,7 +87,9 @@ public class RecommendationListAdapter extends BaseAdapter implements View.OnCli
 
                 iv.setImageDrawable(weatherService.getWeatherIcon());
 
-                tvCurrentTemp.setText(weather.getPrettyTempstring());
+                if (weather != null) {
+                    tvCurrentTemp.setText(weather.getPrettyTempstring());
+                }
             }
         });
 

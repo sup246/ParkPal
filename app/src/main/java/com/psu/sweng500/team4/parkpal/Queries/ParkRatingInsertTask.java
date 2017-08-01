@@ -1,5 +1,6 @@
 package com.psu.sweng500.team4.parkpal.Queries;
 
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
@@ -30,7 +31,23 @@ public class ParkRatingInsertTask extends DBQueryTask {
             final MobileServiceTable<ParkRating> table =
                     AzureServiceAdapter.getInstance().getClient().getTable("PARK_RATINGS", ParkRating.class);
 
-            table.insert(parkRating).get();
+            MobileServiceList<ParkRating> ratingResults = table
+                    .where()
+                    .field("username").eq(parkRating.getUsername())
+                    .and()
+                    .field("park_id").eq(parkRating.getPark_id())
+                    .execute()
+                    .get();
+
+            if (ratingResults.size() > 0) { // update
+                ParkRating toUpdate = ratingResults.get(0);
+                toUpdate.setRating(parkRating.getRating());
+                table.update(toUpdate).get();
+            }
+            else { // insert
+                table.insert(parkRating).get();
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

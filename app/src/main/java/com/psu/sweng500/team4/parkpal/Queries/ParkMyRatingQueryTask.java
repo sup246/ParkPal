@@ -1,25 +1,28 @@
 package com.psu.sweng500.team4.parkpal.Queries;
 
-import android.util.Log;
-
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+
+import java.util.HashMap;
 
 /**
  * Created by brhoads on 7/30/2017.
  */
 
-public class ParkRatingQueryTask extends DBQueryTask {
+public class ParkMyRatingQueryTask extends DBQueryTask {
     private long parkId;
-    private MobileServiceList<ParkRating> queryResults;
+    private String username;
+    private MobileServiceList<ParkRating> ratingResults;
 
-    public ParkRatingQueryTask(AsyncResponse delegate, long parkId){
+    public ParkMyRatingQueryTask(AsyncResponse delegate, long parkId, String username){
         super();
 
         this.delegate = delegate;
         this.parkId = parkId;
+        this.username = username;
     }
 
     @Override
@@ -29,18 +32,17 @@ public class ParkRatingQueryTask extends DBQueryTask {
             final MobileServiceTable<ParkRating> table =
                     AzureServiceAdapter.getInstance().getClient().getTable("PARK_RATINGS", ParkRating.class);
 
-            queryResults = table
+            ratingResults = table
                     .where()
+                    .field("username").eq(username)
+                    .and()
                     .field("park_id").eq(parkId)
-                    .execute().get();
+                    .execute()
+                    .get();
 
-            for (int i = 0; i < queryResults.size() - 1; i++) {
-                Log.d("INFO", "Result (" + parkId + ")" + queryResults.get(i).getUsername() +
-                        " | " + queryResults.get(i).getRating());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return queryResults;
+        return ratingResults.size() > 0;
     }
 }

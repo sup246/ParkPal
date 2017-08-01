@@ -1,71 +1,51 @@
 package com.psu.sweng500.team4.parkpal;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
-import android.location.Geocoder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
-import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
+import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 import com.psu.sweng500.team4.parkpal.Models.User;
-import com.psu.sweng500.team4.parkpal.Models.UserPrefs;
 import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
-import com.psu.sweng500.team4.parkpal.Queries.LocationQueryTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.UserPrefsQueryTask;
-import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Queries.ParkMyRatingQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.ParkNoteRatingQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
-import java.io.Console;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static android.app.PendingIntent.getActivity;
 
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
-    private LayoutInflater layoutInflator;
-    private RelativeLayout layout;
     private ListView alertListV;
+    private Button reviewButton;
 
+    private ArrayList<ParkNote> parkNotes;
+    private ArrayList<ParkRating> parkRatings;
     private ArrayList<ParkAlert> parkAlerts;
 
     ArrayList<String> alertListItems;
@@ -77,8 +57,9 @@ public class ParkDetails extends AppCompatActivity {
         setContentView(R.layout.activity_park_details);
 
         mLocation = (Location) getIntent().getSerializableExtra("Location");
-        getListInfo(mLocation.getLocId());
         mCurrentUser = (User) getIntent().getSerializableExtra("User");
+
+        getListInfo(mLocation.getLocId());
 
         Button mAddNoteButton = (Button) findViewById(R.id.addNote);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +84,6 @@ public class ParkDetails extends AppCompatActivity {
         });
 
         Button mAddReview = (Button) findViewById(R.id.addReview);
-        layout = (RelativeLayout)findViewById(R.id.rLayout);
 
         mAddReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +91,7 @@ public class ParkDetails extends AppCompatActivity {
                 Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
                 intent.putExtra("Location", mLocation);
                 intent.putExtra("User", mCurrentUser);
-                startActivityForResult(intent, 666);
+                startActivityForResult(intent, 999);
 
             }
         });
@@ -123,6 +103,7 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
+        reviewButton = (Button) this.findViewById(R.id.addReview);
 
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -149,7 +130,9 @@ public class ParkDetails extends AppCompatActivity {
 
                 iv.setImageDrawable(weatherService.getWeatherIcon());
 
-                tvCurrentTemp.setText(weather.getPrettyTempstring());
+                if (weather != null) {
+                    tvCurrentTemp.setText(weather.getPrettyTempstring());
+                }
             }
         });
 
@@ -185,31 +168,9 @@ public class ParkDetails extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Refresh the park notes after one has been inserted
-
-        if (requestCode == 666)
-        {
-            RelativeLayout layout = (RelativeLayout)findViewById(R.id.ratingId);
-            layout.setVisibility(View.VISIBLE);
-
-            String comment = data.getStringExtra("Comment");
-            float stars = data.getFloatExtra("Stars", 0);
-
-            TextView userName = (TextView)findViewById(R.id.tvProfileName);
-            MainActivity ma = new MainActivity();
-            userName.setText(mCurrentUser.getUsername());
-
-            RatingBar userRating = (RatingBar)findViewById(R.id.userRatingBar);
-            userRating.setRating(stars);
-
-            TextView userComment = (TextView)findViewById(R.id.tvRatingComment);
-            userComment.setText(comment.toString());
-
-            Button reviewButton = (Button)findViewById(R.id.addReview);
-            reviewButton.setText("EDIT REVIEW");
-
-        }else
-            getListInfo(mLocation.getLocId());
+        // Refresh things after making an update
+        getAlerts(mLocation.getLocId());
+        getListInfo(mLocation.getLocId());
     }
 
     private void addAlertToList(String alert){
@@ -250,59 +211,95 @@ public class ParkDetails extends AppCompatActivity {
     }
 
     private void getListInfo(long locId)  {
-
-
-     /*   try {
-            //Initialization of the AzureServiceAdapter to make it usable in the app.
-            AzureServiceAdapter.Initialize(getBaseContext());
-            Log.d("INFO", "AzureServiceAdapter initialized");
-
-        } catch (Exception e) {
-            Log.e("ParkPal", "exception", e);
-        }
-*/
-        // Get park notes
-        ParkNotesQueryTask asyncQuery = new ParkNotesQueryTask(new AsyncResponse(){
+        ParkNoteRatingQueryTask getParkNotesReviews = new ParkNoteRatingQueryTask(new AsyncResponse(){
 
             @Override
             public void processFinish(Object result){
-                final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
-                ExpandableListAdapter expandableListAdapter;
-                final List<String> expandableListTitle = new ArrayList<String>();
-                final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
-
-                // If no results just show an empty list
                 if (result == null){
-                    result = new ArrayList<ParkNote>();
+                    parkRatings = new ArrayList<ParkRating>();
+                }
+                else {
+                    HashMap map = (HashMap<String, MobileServiceList>) result;
+                    parkRatings = (ArrayList<ParkRating>) map.get("ratings");
+                    parkNotes = (ArrayList<ParkNote>) map.get("notes");
                 }
 
-                expandableListDetail.put("Park Notes", (List<Object>) result);
-
-                expandableListTitle.addAll(expandableListDetail.keySet());
-
-                expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
-                expandableListView.setAdapter(expandableListAdapter);
-                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                    @Override
-                    public void onGroupExpand(int groupPosition) { }
-                });
-
-                expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-                    @Override
-                    public void onGroupCollapse(int groupPosition) { }
-                });
-
-                expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                    @Override
-                    public boolean onChildClick(ExpandableListView parent, View v,
-                                                int groupPosition, int childPosition, long id) { return false; }
-                });
+                initExpandableList();
+                initRatingStars();
             }
         }, locId);
 
-        asyncQuery.execute();
+        getParkNotesReviews.execute();
+
+        ParkMyRatingQueryTask haveIRated = new ParkMyRatingQueryTask(new AsyncResponse(){
+
+            @Override
+            public void processFinish(Object result) {
+                if ((boolean) result == true) {
+                    Drawable img = getResources().getDrawable(android.R.drawable.ic_menu_edit);
+                    reviewButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+                }
+            }
+        }, locId, mCurrentUser.getUsername());
+
+        haveIRated.execute();
     }
 
+    private void initRatingStars() {
+        int ratingsCount = parkRatings.size();
+        int ratingsTotal = 0;
+
+        for (ParkRating rating : parkRatings) {
+            ratingsTotal += rating.getRating();
+        }
+
+        RatingBar ratingBar = (RatingBar) this.findViewById(R.id.ratingBar);
+        if (ratingBar != null) {
+            if (ratingsCount > 0) {
+                ratingBar.setRating(ratingsTotal / ratingsCount);
+            }
+            else {
+                ratingBar.setRating(0);
+            }
+        }
+
+        TextView tvRatNum = (TextView) this.findViewById(R.id.tvRatNum);
+        if (tvRatNum != null) {
+            tvRatNum.setText("(" + ratingsCount + ")");
+        }
+    }
+
+    private void initExpandableList() {
+        final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
+        ExpandableListAdapter expandableListAdapter;
+        final List<String> expandableListTitle = new ArrayList<String>();
+        final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
+
+        Object reviews = parkRatings;
+        Object notes = parkNotes;
+        expandableListDetail.put("Reviews", (List<Object>) reviews);
+        expandableListDetail.put("Comments", (List<Object>) notes);
+
+        expandableListTitle.addAll(expandableListDetail.keySet());
+
+        expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
+        expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) { }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) { }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) { return false; }
+        });
+    }
 
     private Address AddressFinder(LatLng latLong){
 //        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());

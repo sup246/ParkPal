@@ -48,6 +48,7 @@ public class AddParkNoteActivity extends AppCompatActivity {
                     new Date());
 
                 insertNote.execute();
+
                 finish();
             }
         });
