@@ -8,10 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
+import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.util.List;
 
@@ -71,7 +75,25 @@ public class RecommendationListAdapter extends BaseAdapter implements View.OnCli
         tvSeason.setText("Dates Open: " + park.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(park.getAmenities());
-        //TODO - Add weather info
+
+        final ImageView iv = (ImageView) rowView.findViewById(R.id.ivWeatherIcon);
+        final TextView tvCurrentTemp = (TextView) rowView.findViewById(R.id.tvCurrentTemp);
+
+        WeatherService weatherService = new WeatherService(context, new AsyncResponse() {
+            @Override
+            public void processFinish(Object result) {
+                WeatherService weatherService = (WeatherService) result;
+                Weather weather = weatherService.getWeather();
+
+                iv.setImageDrawable(weatherService.getWeatherIcon());
+
+                if (weather != null) {
+                    tvCurrentTemp.setText(weather.getPrettyTempstring());
+                }
+            }
+        });
+
+        weatherService.execute(park.getLatitude(), park.getLongitude());
 
         //TODO - Get location alerts
 

@@ -1,39 +1,34 @@
 package com.psu.sweng500.team4.parkpal;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.LayoutInflater;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Button;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.psu.sweng500.team4.parkpal.Models.Activity;
+import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
+import com.psu.sweng500.team4.parkpal.Models.ParkRating;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
-import com.psu.sweng500.team4.parkpal.Queries.ParkNotesQueryTask;
-import com.squareup.picasso.Picasso;
+import com.psu.sweng500.team4.parkpal.Queries.ParkMyRatingQueryTask;
+import com.psu.sweng500.team4.parkpal.Queries.ParkNoteRatingQueryTask;
+import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,17 +36,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.app.PendingIntent.getActivity;
+
 public class ParkDetails extends AppCompatActivity {
     private Location mLocation;
     private User mCurrentUser;
-    private LayoutInflater layoutInflator;
-    private RelativeLayout layout;
     private ListView alertListV;
+    private Button reviewButton;
 
+    private ArrayList<ParkNote> parkNotes;
+    private ArrayList<ParkRating> parkRatings;
     private ArrayList<ParkAlert> parkAlerts;
-    private int currImage=0;
-    Context context=this.getApplicationContext();
-    private String userChoosenTask="";
 
     ArrayList<String> alertListItems;
     ArrayAdapter<String> alertAdapter;
@@ -62,9 +57,9 @@ public class ParkDetails extends AppCompatActivity {
         setContentView(R.layout.activity_park_details);
 
         mLocation = (Location) getIntent().getSerializableExtra("Location");
-        getListInfo(mLocation.getLocId());
         mCurrentUser = (User) getIntent().getSerializableExtra("User");
-        //WeatherService mWeatherService = new WeatherService(this);
+
+        getListInfo(mLocation.getLocId());
 
         Button mAddNoteButton = (Button) findViewById(R.id.addNote);
         mAddNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +84,6 @@ public class ParkDetails extends AppCompatActivity {
         });
 
         Button mAddReview = (Button) findViewById(R.id.addReview);
-        layout = (RelativeLayout)findViewById(R.id.rLayout);
 
         mAddReview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,9 +91,9 @@ public class ParkDetails extends AppCompatActivity {
                 Intent intent= new Intent(ParkDetails.this, AddParkReviewActivity.class);
                 intent.putExtra("Location", mLocation);
                 intent.putExtra("User", mCurrentUser);
-                startActivityForResult(intent, 666);
+                startActivityForResult(intent, 999);
 
-            };
+            }
         });
 
        // Location clickedLocation = (Location)marker.getTag();
@@ -109,8 +103,7 @@ public class ParkDetails extends AppCompatActivity {
         TextView tvAmenities = (TextView) this.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) this.findViewById(R.id.tvSeason);
         TextView tvPhone = (TextView) this.findViewById(R.id.tvPhone);
-
-        //TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
+        reviewButton = (Button) this.findViewById(R.id.addReview);
 
         //get marker current location
         LatLng latLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -125,8 +118,25 @@ public class ParkDetails extends AppCompatActivity {
         tvSeason.setText("Dates Open: " + mLocation.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(mLocation.getAmenities());
-        //TODO - Add weather info
-       // mWeatherService.execute(mLocation.getLatitude(), mLocation.getLongitude());
+
+        final ImageView iv = (ImageView) this.findViewById(R.id.ivWeatherIcon);
+        final TextView tvCurrentTemp = (TextView) this.findViewById(R.id.tvCurrentTemp);
+
+        WeatherService weatherService = new WeatherService(this, new AsyncResponse() {
+            @Override
+            public void processFinish(Object result) {
+                WeatherService weatherService = (WeatherService) result;
+                Weather weather = weatherService.getWeather();
+
+                iv.setImageDrawable(weatherService.getWeatherIcon());
+
+                if (weather != null) {
+                    tvCurrentTemp.setText(weather.getPrettyTempstring());
+                }
+            }
+        });
+
+        weatherService.execute(mLocation.getLatitude(), mLocation.getLongitude());
 
         //set Phone Number from database
         if (mLocation.getPhone() == ""){
@@ -154,57 +164,13 @@ public class ParkDetails extends AppCompatActivity {
         alertListV.setAdapter(alertAdapter);
 
         getAlerts(mLocation.getLocId());
-
-
-        final String images[] = {"https://www.nps.gov/common/uploads/grid_builder/pwr/crop1_1/324D8FBC-1DD8-B71B-0BBE6CB1E8B2D003.jpg?width=640&quality=90&mode=crop",
-                           "http://www.mesaaz.gov/Home/ShowImage?id=12832&amp;t=636131724775470000",
-                           "https://cityofwinterpark.org/wp-content/uploads/2014/05/DinkyDockPark_Field.jpg",
-                           "https://www.arkansasstateparks.com/!userfiles/subheads/asp_int_sub-img_parks_davidsonville.jpg",
-                           "http://www.vhw.org/images/pages/N92/park.jpg"};
-
-
-        /////////////////////////////////////////////////////////
-        ImageView mPhotoImage = (ImageView) findViewById(R.id.imageButton);
-        mPhotoImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                selectImage();
-            }
-        });
-        ImageView parkView = (ImageView) findViewById(R.id.parkView);
-        Picasso.with(this.getApplicationContext()).load(images[currImage]).into(parkView);
-        /////////////////////////////////////////////////////////
-
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Refresh the park notes after one has been inserted
-
-        if (requestCode == 666)
-        {
-            RelativeLayout layout = (RelativeLayout)findViewById(R.id.ratingId);
-            layout.setVisibility(View.VISIBLE);
-
-            String comment = data.getStringExtra("Comment");
-            float stars = data.getFloatExtra("Stars", 0);
-
-            TextView userName = (TextView)findViewById(R.id.tvProfileName);
-            MainActivity ma = new MainActivity();
-            userName.setText(mCurrentUser.getUsername());
-
-            RatingBar userRating = (RatingBar)findViewById(R.id.userRatingBar);
-            userRating.setRating(stars);
-
-            TextView userComment = (TextView)findViewById(R.id.tvRatingComment);
-            userComment.setText(comment.toString());
-
-            Button reviewButton = (Button)findViewById(R.id.addReview);
-            reviewButton.setText("EDIT REVIEW");
-
-        }else
-            getListInfo(mLocation.getLocId());
+        // Refresh things after making an update
+        getAlerts(mLocation.getLocId());
+        getListInfo(mLocation.getLocId());
     }
 
     private void addAlertToList(String alert){
@@ -245,59 +211,95 @@ public class ParkDetails extends AppCompatActivity {
     }
 
     private void getListInfo(long locId)  {
-
-
-     /*   try {
-            //Initialization of the AzureServiceAdapter to make it usable in the app.
-            AzureServiceAdapter.Initialize(getBaseContext());
-            Log.d("INFO", "AzureServiceAdapter initialized");
-
-        } catch (Exception e) {
-            Log.e("ParkPal", "exception", e);
-        }
-*/
-        // Get park notes
-        ParkNotesQueryTask asyncQuery = new ParkNotesQueryTask(new AsyncResponse(){
+        ParkNoteRatingQueryTask getParkNotesReviews = new ParkNoteRatingQueryTask(new AsyncResponse(){
 
             @Override
             public void processFinish(Object result){
-                final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
-                ExpandableListAdapter expandableListAdapter;
-                final List<String> expandableListTitle = new ArrayList<String>();
-                final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
-
-                // If no results just show an empty list
                 if (result == null){
-                    result = new ArrayList<ParkNote>();
+                    parkRatings = new ArrayList<ParkRating>();
+                }
+                else {
+                    HashMap map = (HashMap<String, MobileServiceList>) result;
+                    parkRatings = (ArrayList<ParkRating>) map.get("ratings");
+                    parkNotes = (ArrayList<ParkNote>) map.get("notes");
                 }
 
-                expandableListDetail.put("Park Notes", (List<Object>) result);
-
-                expandableListTitle.addAll(expandableListDetail.keySet());
-
-                expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
-                expandableListView.setAdapter(expandableListAdapter);
-                expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-                    @Override
-                    public void onGroupExpand(int groupPosition) { }
-                });
-
-                expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-                    @Override
-                    public void onGroupCollapse(int groupPosition) { }
-                });
-
-                expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-                    @Override
-                    public boolean onChildClick(ExpandableListView parent, View v,
-                                                int groupPosition, int childPosition, long id) { return false; }
-                });
+                initExpandableList();
+                initRatingStars();
             }
         }, locId);
 
-        asyncQuery.execute();
+        getParkNotesReviews.execute();
+
+        ParkMyRatingQueryTask haveIRated = new ParkMyRatingQueryTask(new AsyncResponse(){
+
+            @Override
+            public void processFinish(Object result) {
+                if ((boolean) result == true) {
+                    Drawable img = getResources().getDrawable(android.R.drawable.ic_menu_edit);
+                    reviewButton.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+                }
+            }
+        }, locId, mCurrentUser.getUsername());
+
+        haveIRated.execute();
     }
 
+    private void initRatingStars() {
+        int ratingsCount = parkRatings.size();
+        int ratingsTotal = 0;
+
+        for (ParkRating rating : parkRatings) {
+            ratingsTotal += rating.getRating();
+        }
+
+        RatingBar ratingBar = (RatingBar) this.findViewById(R.id.ratingBar);
+        if (ratingBar != null) {
+            if (ratingsCount > 0) {
+                ratingBar.setRating(ratingsTotal / ratingsCount);
+            }
+            else {
+                ratingBar.setRating(0);
+            }
+        }
+
+        TextView tvRatNum = (TextView) this.findViewById(R.id.tvRatNum);
+        if (tvRatNum != null) {
+            tvRatNum.setText("(" + ratingsCount + ")");
+        }
+    }
+
+    private void initExpandableList() {
+        final ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.parkNotes);
+        ExpandableListAdapter expandableListAdapter;
+        final List<String> expandableListTitle = new ArrayList<String>();
+        final HashMap<String, List<Object>> expandableListDetail = new HashMap<String, List<Object>>();
+
+        Object reviews = parkRatings;
+        Object notes = parkNotes;
+        expandableListDetail.put("Reviews", (List<Object>) reviews);
+        expandableListDetail.put("Comments", (List<Object>) notes);
+
+        expandableListTitle.addAll(expandableListDetail.keySet());
+
+        expandableListAdapter = new ExpandableListAdapter(getBaseContext(), expandableListTitle, expandableListDetail);
+        expandableListView.setAdapter(expandableListAdapter);
+        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) { }
+        });
+
+        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) { }
+        });
+
+        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) { return false; }
+        });
+    }
 
     private Address AddressFinder(LatLng latLong){
 //        Geocoder geocoder = new Geocoder(getBaseContext(), Locale.getDefault());
@@ -311,89 +313,4 @@ public class ParkDetails extends AppCompatActivity {
 //        return addresses.get(0);
         return null;
     }
-    ////////////////////////////////////////////////////////////////////
-    private void selectImage() {
-        final CharSequence[] items = {"Take Photo", "Choose from Library",
-                "Cancel"};
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(ParkDetails.this);
-        builder.setTitle("Add Photo!");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                boolean result = checkPermission(ParkDetails.this);
-                if (items[item].equals("Take Photo")) {
-                    userChoosenTask = "Take Photo";
-                    if (result)
-                        cameraIntent();
-                } else if (items[item].equals("Choose from Library")) {
-                    userChoosenTask = "Choose from Library";
-                    if (result)
-                        galleryIntent();
-                } else if (items[item].equals("Cancel")) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
-    }
-
-    private void cameraIntent() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 1337);
-    }
-
-    private void galleryIntent() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);//
-        startActivityForResult(Intent.createChooser(intent, "Select File"), 1337);
-    }
-    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public static boolean checkPermission(final Context context)
-    {
-        int currentAPIVersion = Build.VERSION.SDK_INT;
-        if(currentAPIVersion>=android.os.Build.VERSION_CODES.M)
-        {
-            if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
-                    alertBuilder.setCancelable(true);
-                    alertBuilder.setTitle("Permission necessary");
-                    alertBuilder.setMessage("External storage permission is necessary");
-                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                        }
-                    });
-                    AlertDialog alert = alertBuilder.create();
-                    alert.show();
-                } else {
-                    ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-                }
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(userChoosenTask.equals("Take Photo"))
-                        cameraIntent();
-                    else if(userChoosenTask.equals("Choose from Library"))
-                        galleryIntent();
-                } else {
-                    //code for deny
-                }
-                break;
-        }
-    }
-    ////////////////////////////////////////////////////////////////////
 }

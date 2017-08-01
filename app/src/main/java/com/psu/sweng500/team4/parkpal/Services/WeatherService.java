@@ -1,12 +1,16 @@
 package com.psu.sweng500.team4.parkpal.Services;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
+import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.R;
 
 import java.io.BufferedReader;
@@ -28,18 +32,22 @@ import java.net.URL;
     API Documentation:  http://openweathermap.org/current
  */
 
-public class WeatherService extends AsyncTask<Float, Void, Weather> {
+public class WeatherService extends AsyncTask<Float, Void, WeatherService> {
 
     private Context context;
     private String apiKey;
     private Weather weather;
+    private Drawable weatherIcon;
 
-    public WeatherService(Context context) {
+    public AsyncResponse delegate = null;
+
+    public WeatherService(Context context, AsyncResponse delegate) {
         this.context = context;
+        this.delegate = delegate;
         apiKey = context.getString(R.string.OpenWeatherApiKey);
     }
 
-    protected Weather doInBackground(Float... coords) {
+    protected WeatherService doInBackground(Float... coords) {
         HttpURLConnection urlConnection = null;
         URL url;
         InputStream inStream = null;
@@ -64,6 +72,9 @@ public class WeatherService extends AsyncTask<Float, Void, Weather> {
             }
             Gson gson = new GsonBuilder().create();
             weather = gson.fromJson(response, Weather.class);
+
+            weatherIcon = LoadImageFromWebOperations("http://openweathermap.org/img/w/" +
+                    weather.getWeather().get(0).getIcon() + ".png");
         } catch (Exception e) {
             Log.e("ERROR", e.toString());
         } finally {
@@ -78,12 +89,29 @@ public class WeatherService extends AsyncTask<Float, Void, Weather> {
                 urlConnection.disconnect();
             }
         }
-        return weather;
+        return this;
     }
 
-    protected void onPostExecute(Weather weather) {
-        // TODO: do something with the weather.  Update the info window on the map with relevant temperature, conditions, etc.
+    protected void onPostExecute(WeatherService weatherService) {
+        //Log.d("INFO", "Weather retrieved : " + weather.getMain().getTemp() + " : " + weather.getClouds().getAll());
 
-        Log.d("INFO", "Weather retrieved : " + weather.getMain().getTemp() + " : " + weather.getClouds().getAll());
+        delegate.processFinish(weatherService);
+    }
+
+    private static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Drawable getWeatherIcon() {
+        return weatherIcon;
+    }
+    public Weather getWeather() {
+        return weather;
     }
 }

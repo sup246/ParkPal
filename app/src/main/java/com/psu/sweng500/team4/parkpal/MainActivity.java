@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 mCurrentUser = (User) result;
+                NotificationService.setCurrentUser(mCurrentUser);
 
                 MenuItem profileName = mOptionMenu.findItem(R.id.option_username);
                 profileName.setTitle(mCurrentUser.getFirstName() + " " + mCurrentUser.getLastName());

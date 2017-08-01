@@ -7,16 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.User;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
-import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsInsertTask;
 import com.psu.sweng500.team4.parkpal.Queries.ParkRatingInsertTask;
-
-import java.util.Date;
 
 /**
  * Created by Stefanie Gjorven on 7/29/2017.
@@ -24,12 +20,10 @@ import java.util.Date;
 
 public class AddParkReviewActivity extends AppCompatActivity {
 
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.park_review_layout);
+        setContentView(R.layout.activity_add_park_review);
 
         final Location location = (Location) getIntent().getSerializableExtra("Location");
         final User currentUser = (User) getIntent().getSerializableExtra("User");

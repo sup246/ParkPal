@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,19 +27,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.microsoft.windowsazure.mobileservices.MobileServiceList;
 import com.microsoft.windowsazure.mobileservices.table.MobileServiceTable;
+import com.microsoft.windowsazure.mobileservices.table.query.QueryOrder;
 import com.psu.sweng500.team4.parkpal.Models.Location;
 import com.psu.sweng500.team4.parkpal.Models.ParkAlert;
 import com.psu.sweng500.team4.parkpal.Models.ParkNote;
 import com.psu.sweng500.team4.parkpal.Models.User;
+import com.psu.sweng500.team4.parkpal.Models.Weather.Weather;
 import com.psu.sweng500.team4.parkpal.Queries.AsyncResponse;
 import com.psu.sweng500.team4.parkpal.Queries.ParkAlertsQueryTask;
 import com.psu.sweng500.team4.parkpal.Services.AzureServiceAdapter;
+import com.psu.sweng500.team4.parkpal.Services.WeatherService;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class GMapFragment extends Fragment implements
         OnMapReadyCallback,
@@ -52,6 +57,8 @@ public class GMapFragment extends Fragment implements
     LatLng mHomeLocation = new LatLng(39.9526, -75.1652); // Philly
     private User mCurrentUser;
     private TextView tvAlerts;
+//    private ImageView weatherIcon;
+//    private TextView curTemp;
 
     public GMapFragment() {}
 
@@ -155,6 +162,8 @@ public class GMapFragment extends Fragment implements
         TextView tvAmenities = (TextView) v.findViewById(R.id.tvAmenities);
         TextView tvSeason = (TextView) v.findViewById(R.id.tvSeason);
         tvAlerts = (TextView) v.findViewById(R.id.tvAlerts);
+//        weatherIcon = (ImageView) v.findViewById(R.id.markerWeatherIcon);
+//        curTemp = (TextView) v.findViewById(R.id.markerCurrentTemp);
 
         //sets the variables created above to the current information
         tvLocation.setText(marker.getTitle());
@@ -164,9 +173,35 @@ public class GMapFragment extends Fragment implements
         tvSeason.setText("Dates Open: " + clickedLocation.getDatesOpen());
         //TODO - Add icons to represent the various amenities
         tvAmenities.setText(clickedLocation.getAmenities());
-        //TODO - Add weather info
+
+//        WeatherService weatherService = null;
+//        try {
+//            weatherService = new WeatherService(this.getContext(), new AsyncResponse() {
+//                @Override
+//                public void processFinish(Object result) {
+//                    final WeatherService weatherService = (WeatherService) result;
+//                    final Weather weather = weatherService.getWeather();
+//
+//                    weatherIcon.setImageDrawable(weatherService.getWeatherIcon());
+//                    curTemp.setText(weather.getPrettyTempstring());
+//
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            weatherIcon.setImageDrawable(weatherService.getWeatherIcon());
+//                            curTemp.setText(weather.getPrettyTempstring());
+//                        }
+//                    });
+//                }
+//            }).execute(clickedLocation.getLatitude(), clickedLocation.getLongitude()).get();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
 
         //TODO - Get location alerts
+
         return v;
     }
 
@@ -246,25 +281,37 @@ public class GMapFragment extends Fragment implements
                         AzureServiceAdapter.getInstance().getClient().getTable("LOCATIONS", Location.class);
 
 
-                    //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
-                    //iterable like a regular list
-                    final MobileServiceList<Location> results = table.where().execute().get();
+                    boolean more = true;
+                    int totalrows = 0;
+                    int skipnumber = 0;
+                    int rows=0;
+                    while(more) {
+                        //Get a ListenableFuture<MobileServiceList<Location>> from the MobileServiceTable,
+                        //iterable like a regular list
+                        final MobileServiceList<Location> results  = table.orderBy("LOC_ID", QueryOrder.Ascending).skip(skipnumber).execute().get();
+                        int count = results.size();
+                        skipnumber += 50;
+                        rows += count;
+                        mLocations.addAll(results);
 
-                    mLocations.addAll(results);
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // If we're just starting up we are waiting on getting locations so
-                            // set locations and after create the markers
-                            createLocationMarkers();
+                        if (rows < skipnumber) {
+                            more = false;
                         }
-                    });
 
-                    for (int i = 0; i < 10; i++) {
-                        Log.d("INFO", "Result : " + results.get(i).getName() +
-                                " | " + results.get(i).getLatitude() +
-                                " , " + results.get(i).getLongitude());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // If we're just starting up we are waiting on getting locations so
+                                // set locations and after create the markers
+                                createLocationMarkers();
+                            }
+                        });
+
+                        for (int i = 0; i < 10; i++) {
+                            Log.d("INFO", "Result : " + results.get(i).getName() +
+                                    " | " + results.get(i).getLatitude() +
+                                    " , " + results.get(i).getLongitude());
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
